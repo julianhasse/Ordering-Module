@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Test Ordering</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Review Sidebar (Left) -->
+        <div id="review-sidebar" class="review-sidebar">
+            <div class="sidebar-overlay"></div>
+            <div class="sidebar-content sidebar-content-left-review">
+                <div class="sidebar-header">
+                    <h2>Review</h2>
+                    <button id="review-close" class="sidebar-close" aria-label="Close review">×</button>
+                </div>
+                <div class="sidebar-body" id="review-body">
+                    <!-- Review content will be populated here -->
+                </div>
+                <div class="sidebar-footer">
+                    <button type="button" id="review-cancel" class="btn-ghost">Cancel</button>
+                    <button type="button" id="review-submit" class="btn-primary">Submit & Print</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Left Pane: Search & Discovery (60%) -->
+        <div class="left-pane">
+            <!-- Zone 1: Omni-Search Header -->
+            <div class="search-header">
+                <div class="account-wrapper">
+                    <label for="account-input" class="account-label">Account Number</label>
+                    <div class="account-input-wrapper">
+                        <input type="text" id="account-input" class="account-input"
+                            placeholder="Select account number to start your search" readonly autofocus
+                            aria-label="Account Number">
+                        <div id="account-dropdown" class="account-dropdown" role="listbox" aria-label="Account numbers">
+                            <div class="account-dropdown-item" data-account="12764098">12764098</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-wrapper">
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="Search by Test Name, CPT Code, or Alias (e.g., 'Sugar' for Glucose)..." disabled
+                        aria-label="Search lab tests" aria-expanded="false" aria-haspopup="listbox" role="combobox">
+                    <div id="combobox" class="combobox" role="listbox" aria-label="Search results">
+                        <!-- Search results will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone 2: Quick Selections & Bundles -->
+            <div class="quick-selections">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="favorites">Favorites</button>
+                    <button class="tab-button" data-tab="panels">Specialty Panels</button>
+                    <button class="tab-button" data-tab="recent">Recent Orders</button>
+                </div>
+                <div class="view-toggle-container">
+                    <div class="segmented-button-group">
+                        <button type="button" class="segmented-button active" data-view="compact">Compact View</button>
+                        <button type="button" class="segmented-button" data-view="detailed">Full Details</button>
+                    </div>
+                </div>
+                <div class="chips-container">
+                    <div id="favorites-chips" class="chips-grid active-tab-content"></div>
+                    <div id="panels-chips" class="chips-grid"></div>
+                    <div id="recent-chips" class="chips-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Pane: Current Order Summary (40%) -->
+        <div class="right-pane">
+            <!-- Order Details Accordion -->
+            <div class="order-details-accordion">
+                <button class="accordion-header" id="order-details-accordion-toggle" aria-expanded="false">
+                    <span class="accordion-title">Order Details</span>
+                    <span id="npi-warning" class="npi-warning" style="display: none;">
+                        <span class="npi-warning-icon">⚠</span>
+                        <span class="npi-warning-text">Check NPI Number</span>
+                    </span>
+                    <span class="accordion-icon">▼</span>
+                </button>
+                <div class="accordion-content" id="order-details-accordion-content">
+                    <form id="order-details-form">
+                        <!-- Patient Demographics -->
+                        <div class="form-section">
+                            <h3 class="section-title">Patient Demographics</h3>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="patient-name">Patient Name</label>
+                                    <input type="text" id="patient-name" class="form-input" placeholder="Last, First">
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label for="patient-dob">Date of Birth</label>
+                                    <input type="date" id="patient-dob" class="form-input">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="patient-mrn">MRN</label>
+                                    <input type="text" id="patient-mrn" class="form-input"
+                                        placeholder="Medical Record Number">
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label for="patient-gender">Gender</label>
+                                    <select id="patient-gender" class="form-select">
+                                        <option value="">Select...</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                        <option value="prefer-not-to-say">Prefer not to say</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="patient-address">Address</label>
+                                <input type="text" id="patient-address" class="form-input" placeholder="Street Address">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="patient-city">City</label>
+                                    <input type="text" id="patient-city" class="form-input">
+                                </div>
+                                <div class="form-group form-group-quarter">
+                                    <label for="patient-state">State</label>
+                                    <input type="text" id="patient-state" class="form-input" maxlength="2"
+                                        placeholder="ST">
+                                </div>
+                                <div class="form-group form-group-quarter">
+                                    <label for="patient-zip">ZIP</label>
+                                    <input type="text" id="patient-zip" class="form-input" maxlength="10"
+                                        placeholder="12345">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="patient-phone">Phone</label>
+                                    <input type="tel" id="patient-phone" class="form-input"
+                                        placeholder="(555) 123-4567">
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label for="patient-email">Email</label>
+                                    <input type="email" id="patient-email" class="form-input"
+                                        placeholder="patient@example.com">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Provider Information -->
+                        <div class="form-section">
+                            <h3 class="section-title">Provider Information</h3>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="provider-name">Ordering Provider</label>
+                                    <input type="text" id="provider-name" class="form-input"
+                                        placeholder="Dr. Last, First">
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label for="provider-npi">NPI</label>
+                                    <input type="text" id="provider-npi" class="form-input"
+                                        placeholder="National Provider Identifier">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="provider-dept">Department</label>
+                                    <input type="text" id="provider-dept" class="form-input"
+                                        placeholder="e.g., Internal Medicine">
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label for="provider-phone">Provider Phone</label>
+                                    <input type="tel" id="provider-phone" class="form-input"
+                                        placeholder="(555) 123-4567">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="provider-address">Provider Address</label>
+                                <input type="text" id="provider-address" class="form-input"
+                                    placeholder="Clinic/Hospital Address">
+                            </div>
+                        </div>
+
+                        <!-- Insurance Details -->
+                        <div class="form-section">
+                            <h3 class="section-title">Insurance</h3>
+                            <div class="form-group">
+                                <label for="insurance-primary">Primary Insurance</label>
+                                <input type="text" id="insurance-primary" class="form-input"
+                                    placeholder="Insurance Company Name">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="insurance-member-id">Member ID</label>
+                                    <input type="text" id="insurance-member-id" class="form-input"
+                                        placeholder="Insurance Member ID">
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label for="insurance-group">Group Number</label>
+                                    <input type="text" id="insurance-group" class="form-input"
+                                        placeholder="Group Number">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="insurance-policy-holder">Policy Holder Name</label>
+                                    <input type="text" id="insurance-policy-holder" class="form-input"
+                                        placeholder="Policy Holder">
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label for="insurance-relationship">Relationship to Patient</label>
+                                    <select id="insurance-relationship" class="form-select">
+                                        <option value="self">Self</option>
+                                        <option value="spouse">Spouse</option>
+                                        <option value="child">Child</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="insurance-secondary">Secondary Insurance (if applicable)</label>
+                                <input type="text" id="insurance-secondary" class="form-input"
+                                    placeholder="Secondary Insurance Company">
+                            </div>
+                        </div>
+
+                        <!-- Order Information -->
+                        <div class="form-section">
+                            <h3 class="section-title">Order Information</h3>
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label for="order-date">Order Date</label>
+                                    <input type="date" id="order-date" class="form-input">
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label for="order-time">Order Time</label>
+                                    <input type="time" id="order-time" class="form-input">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="order-location">Order Location</label>
+                                <input type="text" id="order-location" class="form-input"
+                                    placeholder="Clinic/Hospital Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="order-notes">Order Notes</label>
+                                <textarea id="order-notes" class="form-textarea" rows="3"
+                                    placeholder="Additional notes about this order..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-checkbox-label">
+                                    <input type="checkbox" id="order-urgent" class="form-checkbox">
+                                    <span>Mark as Urgent</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Cost Summary -->
+                        <div class="form-section">
+                            <h3 class="section-title">Cost Summary</h3>
+                            <div class="cost-summary">
+                                <div class="cost-row">
+                                    <span class="cost-label">Subtotal:</span>
+                                    <span id="cost-subtotal" class="cost-value">$0.00</span>
+                                </div>
+                                <div class="cost-row">
+                                    <span class="cost-label">Insurance Coverage:</span>
+                                    <span id="cost-coverage" class="cost-value">$0.00</span>
+                                </div>
+                                <div class="cost-row cost-row-total">
+                                    <span class="cost-label">Estimated Patient Cost:</span>
+                                    <span id="cost-patient" class="cost-value">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Zone 3: Active Order List -->
+            <div class="order-header">
+                <div class="order-header-top">
+                    <h2 id="order-title">Current Order (<span id="order-count">0</span>)</h2>
+                    <button id="clear-all-btn" class="btn-clear-all" aria-label="Delete all tests">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M2 4H14M12.6667 4V13.3333C12.6667 14 12 14.6667 11.3333 14.6667H4.66667C4 14.6667 3.33333 14 3.33333 13.3333V4M5.33333 4V2.66667C5.33333 2 6 1.33333 6.66667 1.33333H9.33333C10 1.33333 10.6667 2 10.6667 2.66667V4M6.66667 7.33333V11.3333M9.33333 7.33333V11.3333"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                        <span>Delete</span>
+                    </button>
+                </div>
+                <div class="priority-toggle">
+                    <label class="toggle-label">
+                        <input type="radio" name="priority" value="routine" checked>
+                        <span>Routine</span>
+                    </label>
+                    <label class="toggle-label">
+                        <input type="radio" name="priority" value="stat">
+                        <span>STAT</span>
+                    </label>
+                </div>
+            </div>
+            <div id="order-list" class="order-list" role="list" aria-label="Selected tests">
+                <div class="empty-state">
+                    <p>No tests selected. Use search or quick selections to add tests.</p>
+                </div>
+            </div>
+            <!-- Zone 4: Review & Sign Bar (Fixed Bottom) -->
+            <div class="bottom-bar">
+                <div class="bottom-bar-left">
+                    <!-- Order Details button removed - now in accordion -->
+                </div>
+                <div class="bottom-bar-right">
+                    <button id="save-draft-btn" class="btn-ghost">Save as Draft</button>
+                    <button id="sign-order-btn" class="btn-primary">
+                        Sign & Order
+                    </button>
+                </div>
+            </div>
+
+            <!-- Order Details Sidebar Panel (Left) -->
+            <div id="order-details-sidebar" class="order-details-sidebar">
+                <div class="sidebar-overlay"></div>
+                <div class="sidebar-content sidebar-content-left">
+                    <div class="sidebar-header">
+                        <h2>Order Details</h2>
+                        <button id="order-details-close" class="sidebar-close" aria-label="Close sidebar">×</button>
+                    </div>
+                    <div class="sidebar-body">
+                        <form id="order-details-form">
+                            <!-- Patient Demographics -->
+                            <div class="form-section">
+                                <h3 class="section-title">Patient Demographics</h3>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-name">Patient Name</label>
+                                        <input type="text" id="patient-name" class="form-input"
+                                            placeholder="Last, First">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-dob">Date of Birth</label>
+                                        <input type="date" id="patient-dob" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-mrn">MRN</label>
+                                        <input type="text" id="patient-mrn" class="form-input"
+                                            placeholder="Medical Record Number">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-gender">Gender</label>
+                                        <select id="patient-gender" class="form-select">
+                                            <option value="">Select...</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                            <option value="prefer-not-to-say">Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patient-address">Address</label>
+                                    <input type="text" id="patient-address" class="form-input"
+                                        placeholder="Street Address">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-city">City</label>
+                                        <input type="text" id="patient-city" class="form-input">
+                                    </div>
+                                    <div class="form-group form-group-quarter">
+                                        <label for="patient-state">State</label>
+                                        <input type="text" id="patient-state" class="form-input" maxlength="2"
+                                            placeholder="ST">
+                                    </div>
+                                    <div class="form-group form-group-quarter">
+                                        <label for="patient-zip">ZIP</label>
+                                        <input type="text" id="patient-zip" class="form-input" maxlength="10"
+                                            placeholder="12345">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-phone">Phone</label>
+                                        <input type="tel" id="patient-phone" class="form-input"
+                                            placeholder="(555) 123-4567">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-email">Email</label>
+                                        <input type="email" id="patient-email" class="form-input"
+                                            placeholder="patient@example.com">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Provider Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Provider Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="provider-name">Ordering Provider</label>
+                                        <input type="text" id="provider-name" class="form-input"
+                                            placeholder="Dr. Last, First">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="provider-npi">NPI</label>
+                                        <input type="text" id="provider-npi" class="form-input"
+                                            placeholder="National Provider Identifier">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="provider-dept">Department</label>
+                                        <input type="text" id="provider-dept" class="form-input"
+                                            placeholder="e.g., Internal Medicine">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="provider-phone">Provider Phone</label>
+                                        <input type="tel" id="provider-phone" class="form-input"
+                                            placeholder="(555) 123-4567">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="provider-address">Provider Address</label>
+                                    <input type="text" id="provider-address" class="form-input"
+                                        placeholder="Clinic/Hospital Address">
+                                </div>
+                            </div>
+
+                            <!-- Insurance Details -->
+                            <div class="form-section">
+                                <h3 class="section-title">Insurance</h3>
+                                <div class="form-group">
+                                    <label for="insurance-primary">Primary Insurance</label>
+                                    <input type="text" id="insurance-primary" class="form-input"
+                                        placeholder="Insurance Company Name">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="insurance-member-id">Member ID</label>
+                                        <input type="text" id="insurance-member-id" class="form-input"
+                                            placeholder="Insurance Member ID">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="insurance-group">Group Number</label>
+                                        <input type="text" id="insurance-group" class="form-input"
+                                            placeholder="Group Number">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="insurance-policy-holder">Policy Holder Name</label>
+                                        <input type="text" id="insurance-policy-holder" class="form-input"
+                                            placeholder="Policy Holder">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="insurance-relationship">Relationship to Patient</label>
+                                        <select id="insurance-relationship" class="form-select">
+                                            <option value="self">Self</option>
+                                            <option value="spouse">Spouse</option>
+                                            <option value="child">Child</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="insurance-secondary">Secondary Insurance (if applicable)</label>
+                                    <input type="text" id="insurance-secondary" class="form-input"
+                                        placeholder="Secondary Insurance Company">
+                                </div>
+                            </div>
+
+                            <!-- Order Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Order Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="order-date">Order Date</label>
+                                        <input type="date" id="order-date" class="form-input">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="order-time">Order Time</label>
+                                        <input type="time" id="order-time" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-location">Order Location</label>
+                                    <input type="text" id="order-location" class="form-input"
+                                        placeholder="Clinic/Hospital Name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-notes">Order Notes</label>
+                                    <textarea id="order-notes" class="form-textarea" rows="3"
+                                        placeholder="Additional notes about this order..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-checkbox-label">
+                                        <input type="checkbox" id="order-urgent" class="form-checkbox">
+                                        <span>Mark as Urgent</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Cost Summary -->
+                            <div class="form-section">
+                                <h3 class="section-title">Cost Summary</h3>
+                                <div class="cost-summary">
+                                    <div class="cost-row">
+                                        <span class="cost-label">Subtotal:</span>
+                                        <span id="cost-subtotal" class="cost-value">$0.00</span>
+                                    </div>
+                                    <div class="cost-row">
+                                        <span class="cost-label">Insurance Coverage:</span>
+                                        <span id="cost-coverage" class="cost-value">$0.00</span>
+                                    </div>
+                                    <div class="cost-row cost-row-total">
+                                        <span class="cost-label">Estimated Patient Cost:</span>
+                                        <span id="cost-patient" class="cost-value">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="sidebar-footer">
+                        <button type="button" id="order-details-cancel" class="btn-ghost">Close</button>
+                        <button type="button" id="order-details-save" class="btn-primary">Save Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Sidebar Panel -->
+            <div id="edit-sidebar" class="edit-sidebar">
+                <div class="sidebar-overlay"></div>
+                <div class="sidebar-content">
+                    <div class="sidebar-header">
+                        <h2 id="sidebar-title">Edit Test Details</h2>
+                        <button id="sidebar-close" class="sidebar-close" aria-label="Close sidebar">×</button>
+                    </div>
+                    <div class="sidebar-body">
+                        <form id="edit-form">
+                            <div class="form-group">
+                                <label for="edit-test-name">Test Name</label>
+                                <input type="text" id="edit-test-name" class="form-input" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-cpt-code">CPT Code</label>
+                                <input type="text" id="edit-cpt-code" class="form-input" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-priority">Priority</label>
+                                <select id="edit-priority" class="form-select">
+                                    <option value="routine">Routine</option>
+                                    <option value="stat">STAT</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Diagnosis Codes (ICD-10)</label>
+                                <div id="diagnosis-codes-container" class="diagnosis-codes-container">
+                                    <!-- Diagnosis codes will be added here -->
+                                </div>
+                                <button type="button" id="add-diagnosis-btn" class="btn-add-diagnosis">+ Add Diagnosis
+                                    Code</button>
+                            </div>
+
+                            <div class="form-group">
+                                <h4 class="form-subheader">AOEs</h4>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-specimen">Specimen Source</label>
+                                <select id="edit-specimen" class="form-select">
+                                    <option value="">N/A</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-clinical-indication">Clinical Indication</label>
+                                <textarea id="edit-clinical-indication" class="form-textarea" rows="3"
+                                    placeholder="Enter clinical indication for this test..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-special-instructions">Special Instructions</label>
+                                <textarea id="edit-special-instructions" class="form-textarea" rows="2"
+                                    placeholder="Any special instructions or notes..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-frequency">Frequency</label>
+                                <select id="edit-frequency" class="form-select">
+                                    <option value="once">Once</option>
+                                    <option value="daily">Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="as-needed">As Needed</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-start-date">Start Date</label>
+                                <input type="date" id="edit-start-date" class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit-end-date">End Date (if applicable)</label>
+                                <input type="date" id="edit-end-date" class="form-input">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="sidebar-footer">
+                        <button type="button" id="sidebar-cancel" class="btn-ghost">Cancel</button>
+                        <button type="button" id="sidebar-save" class="btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <script src="data.js"></script>
+            <script src="app.js"></script>
+</body>
+
+</html>
