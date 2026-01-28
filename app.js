@@ -3,7 +3,7 @@ let currentOrder = [];
 let selectedPriority = 'routine';
 let highlightedIndex = -1;
 let searchTimeout = null;
-let viewMode = 'mini'; // 'mini' or 'detailed'
+let viewMode = 'detailed'; // 'mini' or 'detailed'
 
 // DOM Elements
 const accountInput = document.getElementById('account-input');
