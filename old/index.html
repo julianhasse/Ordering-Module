@@ -625,29 +625,34 @@
                 </div>
             </div>
 
-            <!-- Pick List Name Modal -->
-            <div id="pick-list-modal" class="modal-overlay">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Save as Pick List</h3>
-                        <button id="modal-close" class="modal-close" aria-label="Close modal">×</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="pick-list-name">Pick List Name</label>
-                            <input type="text" id="pick-list-name" class="form-input"
-                                placeholder="Enter a name for this pick list..." maxlength="50">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" id="modal-cancel" class="btn-ghost">Cancel</button>
-                        <button type="button" id="modal-save" class="btn-primary">Save</button>
-                    </div>
+    <!-- Pick List Name Modal -->
+    <div id="pick-list-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Save as Pick List</h3>
+                <button id="modal-close" class="modal-close" aria-label="Close modal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="pick-list-name">Pick List Name</label>
+                    <input 
+                        type="text" 
+                        id="pick-list-name" 
+                        class="form-input" 
+                        placeholder="Enter a name for this pick list..."
+                        maxlength="50"
+                    >
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" id="modal-cancel" class="btn-ghost">Cancel</button>
+                <button type="button" id="modal-save" class="btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
 
-            <script src="data.js"></script>
-            <script src="app.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>

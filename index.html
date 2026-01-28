@@ -15,7 +15,12 @@
             <div class="sidebar-overlay"></div>
             <div class="sidebar-content sidebar-content-left-review">
                 <div class="sidebar-header">
-                    <h2>Review</h2>
+                    <h2>
+                        <span class="review-header-title">
+                            <span class="review-header-icon">✓</span>
+                            <span>Order Summary</span>
+                        </span>
+                    </h2>
                     <button id="review-close" class="sidebar-close" aria-label="Close review">×</button>
                 </div>
                 <div class="sidebar-body" id="review-body">
@@ -23,7 +28,7 @@
                 </div>
                 <div class="sidebar-footer">
                     <button type="button" id="review-cancel" class="btn-ghost">Cancel</button>
-                    <button type="button" id="review-submit" class="btn-primary">Submit & Print</button>
+                    <button type="button" id="review-submit" class="btn-primary">Submit & Print PDF</button>
                 </div>
             </div>
         </div>
@@ -625,34 +630,29 @@
                 </div>
             </div>
 
-    <!-- Pick List Name Modal -->
-    <div id="pick-list-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Save as Pick List</h3>
-                <button id="modal-close" class="modal-close" aria-label="Close modal">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="pick-list-name">Pick List Name</label>
-                    <input 
-                        type="text" 
-                        id="pick-list-name" 
-                        class="form-input" 
-                        placeholder="Enter a name for this pick list..."
-                        maxlength="50"
-                    >
+            <!-- Pick List Name Modal -->
+            <div id="pick-list-modal" class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Save as Pick List</h3>
+                        <button id="modal-close" class="modal-close" aria-label="Close modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="pick-list-name">Pick List Name</label>
+                            <input type="text" id="pick-list-name" class="form-input"
+                                placeholder="Enter a name for this pick list..." maxlength="50">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="modal-cancel" class="btn-ghost">Cancel</button>
+                        <button type="button" id="modal-save" class="btn-primary">Save</button>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" id="modal-cancel" class="btn-ghost">Cancel</button>
-                <button type="button" id="modal-save" class="btn-primary">Save</button>
-            </div>
-        </div>
-    </div>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
+            <script src="data.js"></script>
+            <script src="app.js"></script>
 </body>
 
 </html>

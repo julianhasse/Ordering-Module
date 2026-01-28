@@ -41,18 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeAccountNumber() {
     if (!accountInput || !accountDropdown) return;
-    
+
     // Focus on account input on load to indicate it's the first step
     setTimeout(() => {
         accountInput.focus();
     }, 100);
-    
+
     // Open dropdown when account input is clicked
     accountInput.addEventListener('click', (e) => {
         e.preventDefault();
         accountDropdown.classList.toggle('show');
     });
-    
+
     // Handle account selection
     const accountItems = accountDropdown.querySelectorAll('.account-dropdown-item');
     accountItems.forEach(item => {
@@ -60,13 +60,13 @@ function initializeAccountNumber() {
             const accountNumber = item.dataset.account;
             accountInput.value = accountNumber;
             accountDropdown.classList.remove('show');
-            
+
             // Enable search field and focus on it
             searchInput.disabled = false;
             searchInput.focus();
         });
     });
-    
+
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
         if (!accountInput.contains(e.target) && !accountDropdown.contains(e.target)) {
@@ -83,30 +83,30 @@ function initializePickListModal() {
     const closeBtn = document.getElementById('modal-close');
     const cancelBtn = document.getElementById('modal-cancel');
     const saveBtn = document.getElementById('modal-save');
-    
+
     if (!modal) return;
-    
+
     const closeHandler = () => closePickListModal();
-    
+
     if (closeBtn) {
         closeBtn.addEventListener('click', closeHandler);
     }
-    
+
     if (cancelBtn) {
         cancelBtn.addEventListener('click', closeHandler);
     }
-    
+
     // Close on overlay click
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             closeHandler();
         }
     });
-    
+
     if (saveBtn) {
         saveBtn.addEventListener('click', handleSavePickList);
     }
-    
+
     // Allow Enter key to save
     if (nameInput) {
         nameInput.addEventListener('keydown', (e) => {
@@ -133,7 +133,7 @@ function setupEventListeners() {
             }
         }, 200);
     });
-    
+
     // Priority toggle
     document.querySelectorAll('input[name="priority"]').forEach(radio => {
         radio.addEventListener('change', (e) => {
@@ -141,16 +141,16 @@ function setupEventListeners() {
             updateOrderPriority();
         });
     });
-    
+
     // Bottom bar actions
     saveDraftBtn.addEventListener('click', handleSaveDraft);
     signOrderBtn.addEventListener('click', handleSignOrder);
-    
+
     // Clear all button
     if (clearAllBtn) {
         clearAllBtn.addEventListener('click', handleClearAll);
     }
-    
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
@@ -171,7 +171,7 @@ function setupEventListeners() {
             }
         }
     });
-    
+
     // Click outside to close combobox
     document.addEventListener('click', (e) => {
         if (!searchInput.contains(e.target) && !combobox.contains(e.target)) {
@@ -182,19 +182,19 @@ function setupEventListeners() {
 
 function handleSearchInput(e) {
     const query = e.target.value;
-    
+
     // Clear previous timeout
     if (searchTimeout) {
         clearTimeout(searchTimeout);
     }
-    
+
     // Debounce search
     searchTimeout = setTimeout(() => {
         if (query.trim() === '') {
             hideCombobox();
             return;
         }
-        
+
         const results = searchTests(query);
         renderCombobox(results);
         highlightedIndex = -1;
@@ -203,7 +203,7 @@ function handleSearchInput(e) {
 
 function handleSearchKeydown(e) {
     const items = combobox.querySelectorAll('.combobox-item');
-    
+
     if (e.key === 'ArrowDown') {
         e.preventDefault();
         highlightedIndex = Math.min(highlightedIndex + 1, items.length - 1);
@@ -242,38 +242,48 @@ function handleSearchFocus() {
 
 function renderCombobox(results) {
     combobox.innerHTML = '';
-    
+
     if (results.length === 0) {
         combobox.innerHTML = '<div class="combobox-item">No tests found</div>';
         combobox.classList.add('show');
         searchInput.setAttribute('aria-expanded', 'true');
         return;
     }
-    
+
     results.forEach((test, index) => {
         const item = document.createElement('div');
         item.className = 'combobox-item';
         item.dataset.testId = test.id;
         item.setAttribute('role', 'option');
         item.setAttribute('id', `option-${index}`);
-        
+
+        // Check if test is already in order
+        const isInOrder = currentOrder.some(item => item.testId === test.id);
+        const addedChip = isInOrder ? `
+            <span class="added-chip">
+                <span class="added-chip-icon">✓</span>
+                <span>Added</span>
+            </span>
+        ` : '';
+
         item.innerHTML = `
             <span class="combobox-item-name">${test.name}</span>
             <span class="combobox-item-code">${test.cptCode}</span>
+            ${addedChip}
         `;
-        
+
         item.addEventListener('click', () => {
             addTestToOrder(test.id);
         });
-        
+
         item.addEventListener('mouseenter', () => {
             highlightedIndex = index;
             updateComboboxHighlight(combobox.querySelectorAll('.combobox-item'));
         });
-        
+
         combobox.appendChild(item);
     });
-    
+
     combobox.classList.add('show');
     searchInput.setAttribute('aria-expanded', 'true');
     searchInput.setAttribute('aria-activedescendant', highlightedIndex >= 0 ? `option-${highlightedIndex}` : '');
@@ -308,7 +318,7 @@ function hideCombobox() {
 
 function initializeTabs() {
     const tabButtons = document.querySelectorAll('.tab-button');
-    
+
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             // Remove active class from all tabs
@@ -316,7 +326,7 @@ function initializeTabs() {
             document.querySelectorAll('.chips-grid').forEach(grid => {
                 grid.classList.remove('active-tab-content');
             });
-            
+
             // Add active class to clicked tab
             button.classList.add('active');
             const tabName = button.dataset.tab;
@@ -343,18 +353,18 @@ function renderFavorites() {
 function renderPanels() {
     const container = document.getElementById('panels-chips');
     if (!container) return;
-    
+
     // Get both specialty panels and pick lists
     const panels = getSpecialtyPanels();
     const pickLists = getPickLists();
-    
+
     // Clear container
     container.innerHTML = '';
-    
+
     // Check view mode
     const activeButton = document.querySelector('.segmented-button.active');
     const isDetailed = activeButton && activeButton.dataset.view === 'detailed';
-    
+
     // Render panels first
     if (panels.length > 0) {
         if (isDetailed) {
@@ -363,13 +373,13 @@ function renderPanels() {
             renderMiniChips(container, panels);
         }
     }
-    
+
     // Then render pick lists
     pickLists.forEach(pickList => {
         const pickListCard = document.createElement('div');
         pickListCard.className = isDetailed ? 'pick-list-card' : 'chip';
         pickListCard.dataset.pickListId = pickList.id;
-        
+
         if (isDetailed) {
             pickListCard.innerHTML = `
                 <div class="pick-list-icon">
@@ -410,7 +420,7 @@ function renderPanels() {
                 </div>
             `;
         }
-        
+
         pickListCard.addEventListener('click', (e) => {
             // Don't trigger if clicking buttons
             if (!e.target.closest('.pick-list-add-btn') && !e.target.closest('.pick-list-delete-btn') && !e.target.closest('.pick-list-delete-btn-small')) {
@@ -420,7 +430,7 @@ function renderPanels() {
                 });
             }
         });
-        
+
         // Handle add button click in detailed view
         const addBtn = pickListCard.querySelector('.pick-list-add-btn');
         if (addBtn) {
@@ -431,7 +441,7 @@ function renderPanels() {
                 });
             });
         }
-        
+
         // Handle delete button click
         const deleteBtn = pickListCard.querySelector('.pick-list-delete-btn, .pick-list-delete-btn-small');
         if (deleteBtn) {
@@ -445,7 +455,7 @@ function renderPanels() {
                 }
             });
         }
-        
+
         container.appendChild(pickListCard);
     });
 }
@@ -458,11 +468,11 @@ function renderRecent() {
 
 function renderChips(container, tests) {
     container.innerHTML = '';
-    
+
     // Check view mode from active segmented button
     const activeButton = document.querySelector('.segmented-button.active');
     const isDetailed = activeButton && activeButton.dataset.view === 'detailed';
-    
+
     if (isDetailed) {
         renderDetailedCards(container, tests);
     } else {
@@ -473,20 +483,27 @@ function renderChips(container, tests) {
 function renderMiniChips(container, tests) {
     // Remove detailed view class if present
     container.classList.remove('detailed-view');
-    
+
     tests.forEach(test => {
         const chip = document.createElement('div');
         chip.className = 'chip';
         chip.dataset.testId = test.id;
-        
+
         // Extract acronym from name (first letters or common acronym)
         const acronym = getTestAcronym(test);
-        
+
+        // Check if test is already in order - show only checkmark in compact view
+        const isInOrder = currentOrder.some(item => item.testId === test.id);
+        const addedCheckmark = isInOrder ? `
+            <span class="added-chip-compact" title="Added to order">✓</span>
+        ` : '';
+
         chip.innerHTML = `
             <span class="chip-acronym">${acronym}</span>
+            ${addedCheckmark}
             <span class="chip-icon">+</span>
         `;
-        
+
         chip.addEventListener('click', () => {
             addTestToOrder(test.id);
             // Visual feedback
@@ -495,7 +512,7 @@ function renderMiniChips(container, tests) {
                 chip.style.transform = '';
             }, 150);
         });
-        
+
         container.appendChild(chip);
     });
 }
@@ -503,17 +520,26 @@ function renderMiniChips(container, tests) {
 function renderDetailedCards(container, tests) {
     // Add class to container for detailed view
     container.classList.add('detailed-view');
-    
+
     tests.forEach(test => {
         const card = document.createElement('div');
         card.className = 'test-card';
         card.dataset.testId = test.id;
-        
+
         // Format aliases
-        const aliasesText = test.aliases.length > 0 
+        const aliasesText = test.aliases.length > 0
             ? `aka ${test.aliases.slice(0, 3).join(', ')}${test.aliases.length > 3 ? '...' : ''}`
             : '';
-        
+
+        // Check if test is already in order
+        const isInOrder = currentOrder.some(item => item.testId === test.id);
+        const addedChip = isInOrder ? `
+            <span class="added-chip">
+                <span class="added-chip-icon">✓</span>
+                <span>Added</span>
+            </span>
+        ` : '';
+
         card.innerHTML = `
             <div class="test-card-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -526,6 +552,7 @@ function renderDetailedCards(container, tests) {
                     <div class="test-card-name-row">
                         <span class="test-card-name">${test.name}</span>
                         ${test.isPanel ? '<span class="test-card-panel-tag">PANEL</span>' : ''}
+                        ${addedChip}
                     </div>
                     <div class="test-card-cpt">${test.cptCode}</div>
                 </div>
@@ -540,7 +567,7 @@ function renderDetailedCards(container, tests) {
                 </svg>
             </button>
         `;
-        
+
         // Add click handler to entire card and button
         const addBtn = card.querySelector('.test-card-add-btn');
         const cardClickHandler = () => {
@@ -551,19 +578,19 @@ function renderDetailedCards(container, tests) {
                 card.style.transform = '';
             }, 150);
         };
-        
+
         card.addEventListener('click', (e) => {
             // Don't trigger if clicking the add button (it has its own handler)
             if (!e.target.closest('.test-card-add-btn')) {
                 cardClickHandler();
             }
         });
-        
+
         addBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             cardClickHandler();
         });
-        
+
         container.appendChild(card);
     });
 }
@@ -588,13 +615,13 @@ function getTestAcronym(test) {
     if (shortAlias) {
         return shortAlias.toUpperCase();
     }
-    
+
     // Otherwise, use first letters of words
     const words = test.name.split(' ');
     if (words.length > 1) {
         return words.map(w => w[0]).join('').toUpperCase().substring(0, 5);
     }
-    
+
     return test.name.substring(0, 5).toUpperCase();
 }
 
@@ -603,7 +630,7 @@ function getTestAcronym(test) {
 function addTestToOrder(testId) {
     const test = getTestById(testId);
     if (!test) return;
-    
+
     // Check for duplicates
     const existingIndex = currentOrder.findIndex(item => item.testId === testId);
     if (existingIndex >= 0) {
@@ -613,7 +640,7 @@ function addTestToOrder(testId) {
         renderOrderList();
         return;
     }
-    
+
     // Create order item
     const orderItem = {
         id: `order-${Date.now()}-${Math.random()}`,
@@ -632,27 +659,29 @@ function addTestToOrder(testId) {
         isConflict: false,
         conflictReason: ''
     };
-    
+
     currentOrder.push(orderItem);
-    
+
     // Clear search and hide combobox
     searchInput.value = '';
     hideCombobox();
-    
+
     // Keep focus on search for rapid entry
     searchInput.focus();
-    
+
     // Animate item flying to cart
     animateTestToCart(test);
-    
+
     // Show NPI warning if this is the first test added
     if (currentOrder.length === 1) {
         showNPIWarning();
     }
-    
+
     // Update UI
     renderOrderList();
     updateCost();
+    // Re-render quick selections to show "Added" chips
+    renderQuickSelections();
 }
 
 function animateTestToCart(test) {
@@ -660,24 +689,24 @@ function animateTestToCart(test) {
     const flyElement = document.createElement('div');
     flyElement.className = 'flying-item';
     flyElement.textContent = test.name;
-    
+
     // Get positions
     const searchRect = searchInput.getBoundingClientRect();
     const orderListRect = orderList.getBoundingClientRect();
-    
+
     // Set initial position
     flyElement.style.left = searchRect.left + 'px';
     flyElement.style.top = searchRect.top + 'px';
-    
+
     // Calculate destination
     const flyX = orderListRect.left - searchRect.left;
     const flyY = orderListRect.top - searchRect.top;
-    
+
     flyElement.style.setProperty('--fly-x', flyX + 'px');
     flyElement.style.setProperty('--fly-y', flyY + 'px');
-    
+
     document.body.appendChild(flyElement);
-    
+
     // Remove after animation
     setTimeout(() => {
         flyElement.remove();
@@ -688,18 +717,22 @@ function removeTestFromOrder(orderId) {
     currentOrder = currentOrder.filter(item => item.id !== orderId);
     renderOrderList();
     updateCost();
+    // Re-render quick selections to update "Added" chips
+    renderQuickSelections();
 }
 
 function handleClearAll() {
     if (currentOrder.length === 0) {
         return;
     }
-    
+
     const confirmClear = confirm(`Are you sure you want to delete all ${currentOrder.length} test(s) from the order?`);
     if (confirmClear) {
         currentOrder = [];
         renderOrderList();
         updateCost();
+        // Re-render quick selections to update "Added" chips
+        renderQuickSelections();
     }
 }
 
@@ -716,18 +749,18 @@ function renderOrderList() {
         orderCount.textContent = '0';
         return;
     }
-    
+
     orderList.innerHTML = '';
     orderCount.textContent = currentOrder.length;
-    
+
     currentOrder.forEach((item, index) => {
         const orderItem = document.createElement('div');
         orderItem.className = `order-item ${item.isConflict ? 'conflict' : ''}`;
         orderItem.dataset.orderId = item.id;
         orderItem.setAttribute('role', 'listitem');
-        
+
         const test = item.test;
-        
+
         orderItem.innerHTML = `
             <div class="order-item-header">
                 <div class="order-item-name">${test.name}</div>
@@ -758,9 +791,9 @@ function renderOrderList() {
                             <label class="field-label">Specimen</label>
                             <select class="order-field-select" data-order-id="${item.id}" data-field="specimen" aria-label="Specimen source for ${test.name}">
                                 <option value="">Select...</option>
-                                ${test.specimenOptions.map(option => 
-                                    `<option value="${option}" ${item.specimen === option ? 'selected' : ''}>${option}</option>`
-                                ).join('')}
+                                ${test.specimenOptions.map(option =>
+            `<option value="${option}" ${item.specimen === option ? 'selected' : ''}>${option}</option>`
+        ).join('')}
                             </select>
                         </div>
                     ` : ''}
@@ -795,24 +828,24 @@ function renderOrderList() {
                 ` : ''}
             </div>
         `;
-        
+
         // Edit button (for additional details)
         const editBtn = orderItem.querySelector('.order-item-edit');
         editBtn.addEventListener('click', () => {
             openEditSidebar(item.id);
         });
-        
+
         // Remove button
         const removeBtn = orderItem.querySelector('.order-item-remove');
         removeBtn.addEventListener('click', () => {
             removeTestFromOrder(item.id);
         });
-        
+
         // Inline field inputs - handle all editable fields
         const fieldInputs = orderItem.querySelectorAll('.order-field-input, .order-field-select');
         fieldInputs.forEach(input => {
             const fieldName = input.dataset.field;
-            
+
             if (input.tagName === 'INPUT') {
                 input.addEventListener('input', (e) => {
                     item[fieldName] = e.target.value;
@@ -834,7 +867,7 @@ function renderOrderList() {
                 });
             }
         });
-        
+
         // Handle fasting segmented buttons
         const fastingGroup = orderItem.querySelector('.fasting-segmented-group');
         if (fastingGroup) {
@@ -850,7 +883,7 @@ function renderOrderList() {
                 });
             });
         }
-        
+
         // Handle "Add to all" link for ICD-10
         const addToAllLink = orderItem.querySelector('.add-to-all-link');
         if (addToAllLink) {
@@ -876,7 +909,7 @@ function renderOrderList() {
                 }
             });
         }
-        
+
         // Show/hide "Add to all" link based on input value
         const icd10Input = orderItem.querySelector('.order-field-input[data-field="icd10"]');
         if (icd10Input) {
@@ -920,7 +953,7 @@ function renderOrderList() {
                 }
             });
         }
-        
+
         // Resolve conflict link
         const resolveLink = orderItem.querySelector('.resolve-link');
         if (resolveLink) {
@@ -932,7 +965,7 @@ function renderOrderList() {
                 renderOrderList();
             });
         }
-        
+
         orderList.appendChild(orderItem);
     });
 }
@@ -945,14 +978,14 @@ function checkConflicts() {
     currentOrder.forEach(item => {
         testIdCounts[item.testId] = (testIdCounts[item.testId] || 0) + 1;
     });
-    
+
     currentOrder.forEach(item => {
         if (testIdCounts[item.testId] > 1) {
             item.isConflict = true;
             item.conflictReason = 'Duplicate Order';
         }
     });
-    
+
     renderOrderList();
 }
 
@@ -962,7 +995,7 @@ function updateCost() {
     const total = currentOrder.reduce((sum, item) => {
         return sum + (item.test.estimatedCost || 0);
     }, 0);
-    
+
     const costText = `$${total.toFixed(2)}`;
     if (totalCost) {
         totalCost.textContent = costText;
@@ -970,7 +1003,7 @@ function updateCost() {
     if (totalCostBadge) {
         totalCostBadge.textContent = costText;
     }
-    
+
     // Update cost summary in order details sidebar if open
     updateCostSummary();
 }
@@ -980,7 +1013,7 @@ function handleSaveDraft() {
         alert('Please add at least one test to save as a pick list.');
         return;
     }
-    
+
     // Open modal to get pick list name
     openPickListModal();
 }
@@ -988,7 +1021,7 @@ function handleSaveDraft() {
 function openPickListModal() {
     const modal = document.getElementById('pick-list-modal');
     const nameInput = document.getElementById('pick-list-name');
-    
+
     if (modal && nameInput) {
         modal.classList.add('open');
         nameInput.value = '';
@@ -1006,29 +1039,29 @@ function closePickListModal() {
 function handleSavePickList() {
     const nameInput = document.getElementById('pick-list-name');
     const name = nameInput ? nameInput.value.trim() : '';
-    
+
     if (!name) {
         alert('Please enter a name for the pick list.');
         return;
     }
-    
+
     // Get test IDs from current order
     const testIds = currentOrder.map(item => item.testId);
-    
+
     // Save pick list
     savePickList(name, testIds);
-    
+
     // Close modal
     closePickListModal();
-    
+
     // Re-render panels to show new pick list
     renderPanels();
-    
+
     // Visual feedback
     const originalText = saveDraftBtn.textContent;
     saveDraftBtn.textContent = 'Saved!';
     saveDraftBtn.style.color = '#0066cc';
-    
+
     setTimeout(() => {
         saveDraftBtn.textContent = originalText;
         saveDraftBtn.style.color = '';
@@ -1040,7 +1073,7 @@ function handleSignOrder() {
         alert('Please add at least one test to the order.');
         return;
     }
-    
+
     // Open review sidebar instead of submitting directly
     openReviewSidebar();
 }
@@ -1048,14 +1081,14 @@ function handleSignOrder() {
 function openReviewSidebar() {
     const sidebar = document.getElementById('review-sidebar');
     if (!sidebar) return;
-    
+
     // Populate review content
     populateReviewContent();
-    
+
     // Show sidebar
     sidebar.classList.add('open');
     document.body.style.overflow = 'hidden';
-    
+
     // Setup event listeners
     setupReviewListeners();
 }
@@ -1074,26 +1107,26 @@ function setupReviewListeners() {
     const cancelBtn = document.getElementById('review-cancel');
     const sidebar = document.getElementById('review-sidebar');
     const overlay = sidebar ? sidebar.querySelector('.sidebar-overlay') : null;
-    
+
     const closeHandler = () => closeReviewSidebar();
-    
+
     // Remove existing listeners by cloning
     if (closeBtn) {
         const newCloseBtn = closeBtn.cloneNode(true);
         closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
         newCloseBtn.addEventListener('click', closeHandler);
     }
-    
+
     if (cancelBtn) {
         const newCancelBtn = cancelBtn.cloneNode(true);
         cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
         newCancelBtn.addEventListener('click', closeHandler);
     }
-    
+
     if (overlay) {
         overlay.addEventListener('click', closeHandler);
     }
-    
+
     // Submit button
     const submitBtn = document.getElementById('review-submit');
     if (submitBtn) {
@@ -1108,13 +1141,13 @@ function setupReviewListeners() {
 function populateReviewContent() {
     const reviewBody = document.getElementById('review-body');
     if (!reviewBody) return;
-    
+
     // Load order details data
     loadOrderDetailsData();
-    
+
     let html = '';
-    
-    // Order Details Summary
+
+    // Order Details Summary (compact)
     html += `
         <div class="review-section">
             <h3 class="review-section-title">Order Details</h3>
@@ -1142,61 +1175,38 @@ function populateReviewContent() {
             </div>
         </div>
     `;
-    
-    // Tests Summary
+
+    // Tests Summary - compact two-line cards
     html += `
         <div class="review-section">
             <h3 class="review-section-title">Tests (${currentOrder.length})</h3>
             <div class="review-tests">
     `;
-    
+
     currentOrder.forEach((item, index) => {
         const test = item.test;
+        const primaryDx = (item.diagnosisCodes && item.diagnosisCodes.length > 0)
+            ? item.diagnosisCodes[0]
+            : (item.icd10 || '');
         html += `
             <div class="review-test-item" data-order-id="${item.id}">
-                <div class="review-test-header">
+                <div class="review-test-line-primary">
                     <span class="review-test-name">${test.name}</span>
                     <span class="review-test-code">${test.cptCode}</span>
                 </div>
-                <div class="review-test-details">
-                    <div class="review-detail-row">
-                        <span class="review-label">ICD-10:</span>
-                        <span class="review-value" contenteditable="true" data-order-id="${item.id}" data-field="icd10">${item.icd10 || ''}</span>
-                    </div>
-                    ${item.fasting ? `
-                        <div class="review-detail-row">
-                            <span class="review-label">Fasting:</span>
-                            <span class="review-value">${item.fasting === 'yes' ? 'Yes' : item.fasting === 'na' ? 'N/A' : 'No'}</span>
-                        </div>
-                    ` : ''}
-                    ${item.specimen ? `
-                        <div class="review-detail-row">
-                            <span class="review-label">Specimen:</span>
-                            <span class="review-value">${item.specimen}</span>
-                        </div>
-                    ` : ''}
-                    ${item.clinicalIndication ? `
-                        <div class="review-detail-row">
-                            <span class="review-label">Clinical Indication:</span>
-                            <span class="review-value" contenteditable="true" data-order-id="${item.id}" data-field="clinicalIndication">${item.clinicalIndication}</span>
-                        </div>
-                    ` : ''}
-                    ${item.diagnosisCodes && item.diagnosisCodes.length > 0 ? `
-                        <div class="review-detail-row">
-                            <span class="review-label">Diagnosis Codes:</span>
-                            <span class="review-value">${item.diagnosisCodes.join(', ')}</span>
-                        </div>
-                    ` : ''}
+                <div class="review-test-line-secondary">
+                    <span class="review-test-dx-label">ICD-10:</span>
+                    <span class="review-test-dx-value review-value" contenteditable="true" data-order-id="${item.id}" data-field="icd10">${primaryDx}</span>
                 </div>
             </div>
         `;
     });
-    
+
     html += `
             </div>
         </div>
     `;
-    
+
     // AOEs Section (if any tests have AOEs)
     const hasAOEs = currentOrder.some(item => item.specialInstructions || item.clinicalIndication);
     if (hasAOEs) {
@@ -1205,7 +1215,7 @@ function populateReviewContent() {
                 <h3 class="review-section-title">AOEs</h3>
                 <div class="review-aoes">
         `;
-        
+
         currentOrder.forEach((item) => {
             if (item.specialInstructions || item.clinicalIndication) {
                 html += `
@@ -1218,15 +1228,15 @@ function populateReviewContent() {
                 `;
             }
         });
-        
+
         html += `
                 </div>
             </div>
         `;
     }
-    
+
     reviewBody.innerHTML = html;
-    
+
     // Setup inline editing
     setupReviewInlineEditing();
 }
@@ -1237,7 +1247,7 @@ function setupReviewInlineEditing() {
         element.addEventListener('blur', (e) => {
             const field = e.target.dataset.field;
             const orderId = e.target.dataset.orderId;
-            
+
             if (orderId) {
                 // Update order item
                 const orderItem = currentOrder.find(item => item.id === orderId);
@@ -1252,13 +1262,13 @@ function setupReviewInlineEditing() {
                 }
             }
         });
-        
+
         // Add visual feedback
         element.addEventListener('focus', (e) => {
             e.target.style.backgroundColor = '#f0f7ff';
             e.target.style.outline = '2px solid #0066cc';
         });
-        
+
         element.addEventListener('blur', (e) => {
             e.target.style.backgroundColor = '';
             e.target.style.outline = '';
@@ -1275,7 +1285,7 @@ function handleReviewSubmit() {
             return;
         }
     }
-    
+
     // Prepare order data for submission
     const orderData = {
         accountNumber: accountInput ? accountInput.value : '12764098',
@@ -1298,16 +1308,16 @@ function handleReviewSubmit() {
         totalCost: currentOrder.reduce((sum, item) => sum + (item.test.estimatedCost || 0), 0),
         timestamp: new Date().toISOString()
     };
-    
+
     // Log to console (in real app, this would send to EHR API)
     console.log('Order submitted:', orderData);
-    
+
     // Close review sidebar
     closeReviewSidebar();
-    
+
     // Show success notification
     showSuccessNotification(`Order submitted successfully!\n\n${currentOrder.length} test(s) ordered.`);
-    
+
     // Clear order
     currentOrder = [];
     renderOrderList();
@@ -1338,14 +1348,14 @@ function showSuccessNotification(message) {
             <span class="notification-message">${message.replace(/\n/g, '<br>')}</span>
         </div>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Show notification
     setTimeout(() => {
         notification.classList.add('show');
     }, 10);
-    
+
     // Hide and remove after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
@@ -1362,14 +1372,14 @@ let currentEditingOrderId = null;
 function openEditSidebar(orderId) {
     const orderItem = currentOrder.find(item => item.id === orderId);
     if (!orderItem) return;
-    
+
     currentEditingOrderId = orderId;
     const sidebar = document.getElementById('edit-sidebar');
     const test = orderItem.test;
-    
+
     // Update sidebar title
     document.getElementById('sidebar-title').textContent = `Edit: ${test.name}`;
-    
+
     // Populate form fields
     document.getElementById('edit-test-name').value = test.name;
     document.getElementById('edit-cpt-code').value = test.cptCode;
@@ -1379,7 +1389,7 @@ function openEditSidebar(orderId) {
     document.getElementById('edit-frequency').value = orderItem.frequency || 'once';
     document.getElementById('edit-start-date').value = orderItem.startDate || '';
     document.getElementById('edit-end-date').value = orderItem.endDate || '';
-    
+
     // Populate specimen dropdown
     const specimenSelect = document.getElementById('edit-specimen');
     specimenSelect.innerHTML = '<option value="">N/A</option>';
@@ -1394,14 +1404,14 @@ function openEditSidebar(orderId) {
             specimenSelect.appendChild(optionEl);
         });
     }
-    
+
     // Populate diagnosis codes
     renderDiagnosisCodes(orderItem.diagnosisCodes || (orderItem.icd10 ? [orderItem.icd10] : []));
-    
+
     // Show sidebar
     sidebar.classList.add('open');
     document.body.style.overflow = 'hidden';
-    
+
     // Setup sidebar event listeners
     setupSidebarListeners();
 }
@@ -1419,26 +1429,26 @@ function setupSidebarListeners() {
     const cancelBtn = document.getElementById('sidebar-cancel');
     const sidebar = document.getElementById('edit-sidebar');
     const overlay = sidebar ? sidebar.querySelector('.sidebar-overlay') : null;
-    
+
     const closeHandler = () => closeEditSidebar();
-    
+
     // Remove existing listeners by cloning
     if (closeBtn) {
         const newCloseBtn = closeBtn.cloneNode(true);
         closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
         newCloseBtn.addEventListener('click', closeHandler);
     }
-    
+
     if (cancelBtn) {
         const newCancelBtn = cancelBtn.cloneNode(true);
         cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
         newCancelBtn.addEventListener('click', closeHandler);
     }
-    
+
     if (overlay) {
         overlay.addEventListener('click', closeHandler);
     }
-    
+
     // Add diagnosis code button
     const addDiagnosisBtn = document.getElementById('add-diagnosis-btn');
     const newAddBtn = addDiagnosisBtn.cloneNode(true);
@@ -1446,7 +1456,7 @@ function setupSidebarListeners() {
     newAddBtn.addEventListener('click', () => {
         addDiagnosisCodeInput();
     });
-    
+
     // Save button
     const saveBtn = document.getElementById('sidebar-save');
     const newSaveBtn = saveBtn.cloneNode(true);
@@ -1454,7 +1464,7 @@ function setupSidebarListeners() {
     newSaveBtn.addEventListener('click', () => {
         saveEditSidebar();
     });
-    
+
     // Handle diagnosis code removal
     document.querySelectorAll('.diagnosis-code-remove').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -1467,7 +1477,7 @@ function setupSidebarListeners() {
 function renderDiagnosisCodes(codes) {
     const container = document.getElementById('diagnosis-codes-container');
     container.innerHTML = '';
-    
+
     if (codes.length === 0) {
         addDiagnosisCodeInput();
     } else {
@@ -1481,7 +1491,7 @@ function addDiagnosisCodeInput(value = '') {
     const container = document.getElementById('diagnosis-codes-container');
     const codeItem = document.createElement('div');
     codeItem.className = 'diagnosis-code-item';
-    
+
     codeItem.innerHTML = `
         <input 
             type="text" 
@@ -1492,21 +1502,21 @@ function addDiagnosisCodeInput(value = '') {
         >
         <button type="button" class="diagnosis-code-remove" aria-label="Remove diagnosis code">×</button>
     `;
-    
+
     const removeBtn = codeItem.querySelector('.diagnosis-code-remove');
     removeBtn.addEventListener('click', () => {
         codeItem.remove();
     });
-    
+
     container.appendChild(codeItem);
 }
 
 function saveEditSidebar() {
     if (!currentEditingOrderId) return;
-    
+
     const orderItem = currentOrder.find(item => item.id === currentEditingOrderId);
     if (!orderItem) return;
-    
+
     // Collect form data
     orderItem.priority = document.getElementById('edit-priority').value;
     orderItem.specimen = document.getElementById('edit-specimen').value || '';
@@ -1515,17 +1525,17 @@ function saveEditSidebar() {
     orderItem.frequency = document.getElementById('edit-frequency').value;
     orderItem.startDate = document.getElementById('edit-start-date').value;
     orderItem.endDate = document.getElementById('edit-end-date').value;
-    
+
     // Collect diagnosis codes
     const diagnosisInputs = document.querySelectorAll('.diagnosis-code-input');
     const diagnosisCodes = Array.from(diagnosisInputs)
         .map(input => input.value.trim())
         .filter(code => code !== '');
-    
+
     orderItem.diagnosisCodes = diagnosisCodes;
     // Keep backward compatibility with icd10 field
     orderItem.icd10 = diagnosisCodes[0] || '';
-    
+
     // Update priority if it changed
     if (orderItem.priority !== selectedPriority) {
         // If this was the only item, update global priority
@@ -1535,10 +1545,10 @@ function saveEditSidebar() {
             document.querySelector(`input[name="priority"][value="${orderItem.priority}"]`).checked = true;
         }
     }
-    
+
     // Re-render order list to reflect changes
     renderOrderList();
-    
+
     // Close sidebar
     closeEditSidebar();
 }
@@ -1586,7 +1596,7 @@ let orderDetailsData = {
 function initializeOrderDetailsAccordion() {
     const accordionToggle = document.getElementById('order-details-accordion-toggle');
     const accordionContent = document.getElementById('order-details-accordion-content');
-    
+
     if (accordionToggle && accordionContent) {
         // Check if we have old empty data in localStorage and clear it to use new defaults
         try {
@@ -1601,21 +1611,21 @@ function initializeOrderDetailsAccordion() {
         } catch (e) {
             // Ignore errors
         }
-        
+
         // Load saved data (only if exists with actual data, otherwise use defaults)
         loadOrderDetailsData();
-        
+
         // Populate form fields with current data (defaults or saved)
         populateOrderDetailsForm();
-        
+
         // Update cost summary
         updateCostSummary();
-        
+
         // Setup accordion toggle
         accordionToggle.addEventListener('click', () => {
             const isExpanded = accordionToggle.getAttribute('aria-expanded') === 'true';
             accordionToggle.setAttribute('aria-expanded', !isExpanded);
-            
+
             if (!isExpanded) {
                 accordionContent.classList.add('expanded');
                 // Hide NPI warning when accordion is expanded
@@ -1624,7 +1634,7 @@ function initializeOrderDetailsAccordion() {
                 accordionContent.classList.remove('expanded');
             }
         });
-        
+
         // Setup form auto-save
         const form = document.getElementById('order-details-form');
         if (form) {
@@ -1643,7 +1653,7 @@ function openOrderDetailsSidebar() {
     // Keep for backward compatibility if needed
     const accordionToggle = document.getElementById('order-details-accordion-toggle');
     const accordionContent = document.getElementById('order-details-accordion-content');
-    
+
     if (accordionToggle && accordionContent) {
         const isExpanded = accordionToggle.getAttribute('aria-expanded') === 'true';
         if (!isExpanded) {
@@ -1675,14 +1685,14 @@ function populateOrderDetailsForm() {
     document.getElementById('patient-zip').value = orderDetailsData.patient.zip || '';
     document.getElementById('patient-phone').value = orderDetailsData.patient.phone || '';
     document.getElementById('patient-email').value = orderDetailsData.patient.email || '';
-    
+
     // Provider Information
     document.getElementById('provider-name').value = orderDetailsData.provider.name || '';
     document.getElementById('provider-npi').value = orderDetailsData.provider.npi || '';
     document.getElementById('provider-dept').value = orderDetailsData.provider.dept || '';
     document.getElementById('provider-phone').value = orderDetailsData.provider.phone || '';
     document.getElementById('provider-address').value = orderDetailsData.provider.address || '';
-    
+
     // Insurance
     document.getElementById('insurance-primary').value = orderDetailsData.insurance.primary || '';
     document.getElementById('insurance-member-id').value = orderDetailsData.insurance.memberId || '';
@@ -1690,7 +1700,7 @@ function populateOrderDetailsForm() {
     document.getElementById('insurance-policy-holder').value = orderDetailsData.insurance.policyHolder || '';
     document.getElementById('insurance-relationship').value = orderDetailsData.insurance.relationship || 'self';
     document.getElementById('insurance-secondary').value = orderDetailsData.insurance.secondary || '';
-    
+
     // Order Information
     document.getElementById('order-date').value = orderDetailsData.order.date || new Date().toISOString().split('T')[0];
     document.getElementById('order-time').value = orderDetailsData.order.time || new Date().toTimeString().slice(0, 5);
@@ -1711,36 +1721,36 @@ function saveOrderDetails() {
     orderDetailsData.patient.zip = document.getElementById('patient-zip').value;
     orderDetailsData.patient.phone = document.getElementById('patient-phone').value;
     orderDetailsData.patient.email = document.getElementById('patient-email').value;
-    
+
     orderDetailsData.provider.name = document.getElementById('provider-name').value;
     orderDetailsData.provider.npi = document.getElementById('provider-npi').value;
     orderDetailsData.provider.dept = document.getElementById('provider-dept').value;
     orderDetailsData.provider.phone = document.getElementById('provider-phone').value;
     orderDetailsData.provider.address = document.getElementById('provider-address').value;
-    
+
     orderDetailsData.insurance.primary = document.getElementById('insurance-primary').value;
     orderDetailsData.insurance.memberId = document.getElementById('insurance-member-id').value;
     orderDetailsData.insurance.group = document.getElementById('insurance-group').value;
     orderDetailsData.insurance.policyHolder = document.getElementById('insurance-policy-holder').value;
     orderDetailsData.insurance.relationship = document.getElementById('insurance-relationship').value;
     orderDetailsData.insurance.secondary = document.getElementById('insurance-secondary').value;
-    
+
     orderDetailsData.order.date = document.getElementById('order-date').value;
     orderDetailsData.order.time = document.getElementById('order-time').value;
     orderDetailsData.order.location = document.getElementById('order-location').value;
     orderDetailsData.order.notes = document.getElementById('order-notes').value;
     orderDetailsData.order.urgent = document.getElementById('order-urgent').checked;
-    
+
     // Save to localStorage
     saveOrderDetailsData();
-    
+
     // Show confirmation (if save button exists in sidebar)
     const saveBtn = document.getElementById('order-details-save');
     if (saveBtn) {
         const originalText = saveBtn.textContent;
         saveBtn.textContent = 'Saved!';
         saveBtn.style.backgroundColor = '#28a745';
-        
+
         setTimeout(() => {
             saveBtn.textContent = originalText;
             saveBtn.style.backgroundColor = '';
@@ -1783,15 +1793,15 @@ function updateCostSummary() {
     const subtotal = currentOrder.reduce((sum, item) => {
         return sum + (item.test.estimatedCost || 0);
     }, 0);
-    
+
     // Mock insurance coverage (80% coverage)
     const coverage = subtotal * 0.8;
     const patientCost = subtotal - coverage;
-    
+
     const subtotalEl = document.getElementById('cost-subtotal');
     const coverageEl = document.getElementById('cost-coverage');
     const patientCostEl = document.getElementById('cost-patient');
-    
+
     if (subtotalEl) {
         subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
     }
