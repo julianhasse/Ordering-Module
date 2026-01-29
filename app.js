@@ -22,8 +22,36 @@ const clearAllBtn = document.getElementById('clear-all-btn');
 
 // Keyboard shortcut hint removed
 
+// Custom tooltip (instant, no native delay)
+let customTooltipEl = null;
+
+function initCustomTooltip() {
+    customTooltipEl = document.getElementById('custom-tooltip');
+}
+
+function showCustomTooltip(text, anchorEl, variant) {
+    if (!customTooltipEl || !anchorEl) return;
+    customTooltipEl.textContent = text;
+    customTooltipEl.classList.remove('custom-tooltip--danger');
+    if (variant === 'danger') {
+        customTooltipEl.classList.add('custom-tooltip--danger');
+    }
+    const rect = anchorEl.getBoundingClientRect();
+    customTooltipEl.style.left = `${rect.left + rect.width / 2}px`;
+    customTooltipEl.style.top = `${rect.top - 6}px`;
+    customTooltipEl.style.transform = 'translate(-50%, -100%)';
+    customTooltipEl.classList.add('visible');
+}
+
+function hideCustomTooltip() {
+    if (customTooltipEl) {
+        customTooltipEl.classList.remove('visible', 'custom-tooltip--danger');
+    }
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    initCustomTooltip();
     initializeAccountNumber();
     initializeTabs();
     initializeViewToggle();
@@ -395,7 +423,7 @@ function renderPanels() {
                     </div>
                 </div>
                 <div class="pick-list-actions">
-                    <button class="pick-list-add-btn" aria-label="Add to Order" title="Add to Order">
+                    <button class="pick-list-add-btn" aria-label="Add to Order">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8 3V13M3 8H13" stroke="#0066cc" stroke-width="2" stroke-linecap="round"/>
                         </svg>
@@ -411,7 +439,7 @@ function renderPanels() {
             pickListCard.innerHTML = `
                 <span class="chip-acronym">${pickList.name.substring(0, 8)}</span>
                 <div class="chip-actions">
-                    <span class="chip-icon" title="Add to Order">+</span>
+                    <span class="chip-icon">+</span>
                     <button class="pick-list-delete-btn-small" aria-label="Delete ${pickList.name}" data-pick-list-id="${pickList.id}">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2 4H14M12.6667 4V13.3333C12.6667 14 12 14.6667 11.3333 14.6667H4.66667C4 14.6667 3.33333 14 3.33333 13.3333V4M5.33333 4V2.66667C5.33333 2 6 1.33333 6.66667 1.33333H9.33333C10 1.33333 10.6667 2 10.6667 2.66667V4M6.66667 7.33333V11.3333M9.33333 7.33333V11.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -440,11 +468,22 @@ function renderPanels() {
                     addTestToOrder(testId);
                 });
             });
+            addBtn.addEventListener('mouseenter', () => showCustomTooltip('Add to Order', addBtn));
+            addBtn.addEventListener('mouseleave', hideCustomTooltip);
+        }
+
+        // Custom tooltip for compact pick list chip icon
+        const pickListChipIcon = pickListCard.querySelector('.chip-icon');
+        if (pickListChipIcon) {
+            pickListChipIcon.addEventListener('mouseenter', () => showCustomTooltip('Add to Order', pickListChipIcon));
+            pickListChipIcon.addEventListener('mouseleave', hideCustomTooltip);
         }
 
         // Handle delete button click
         const deleteBtn = pickListCard.querySelector('.pick-list-delete-btn, .pick-list-delete-btn-small');
         if (deleteBtn) {
+            deleteBtn.addEventListener('mouseenter', () => showCustomTooltip('Delete', deleteBtn, 'danger'));
+            deleteBtn.addEventListener('mouseleave', hideCustomTooltip);
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const pickListId = deleteBtn.dataset.pickListId;
@@ -501,8 +540,14 @@ function renderMiniChips(container, tests) {
         chip.innerHTML = `
             <span class="chip-acronym">${acronym}</span>
             ${addedCheckmark}
-            <span class="chip-icon" title="Add to Order">+</span>
+            <span class="chip-icon">+</span>
         `;
+
+        const chipIcon = chip.querySelector('.chip-icon');
+        if (chipIcon) {
+            chipIcon.addEventListener('mouseenter', () => showCustomTooltip('Add to Order', chipIcon));
+            chipIcon.addEventListener('mouseleave', hideCustomTooltip);
+        }
 
         chip.addEventListener('click', () => {
             addTestToOrder(test.id);
@@ -561,8 +606,8 @@ function renderDetailedCards(container, tests) {
                     ${aliasesText ? `<span class="test-card-separator">•</span><span class="test-card-aliases">${aliasesText}</span>` : ''}
                 </div>
             </div>
-            <button class="test-card-add-btn" aria-label="Add to Order" title="Add to Order">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <button type="button" class="test-card-add-btn" aria-label="Add to Order">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path d="M8 3V13M3 8H13" stroke="#0066cc" stroke-width="2" stroke-linecap="round"/>
                 </svg>
             </button>
@@ -590,6 +635,9 @@ function renderDetailedCards(container, tests) {
             e.stopPropagation();
             cardClickHandler();
         });
+
+        addBtn.addEventListener('mouseenter', () => showCustomTooltip('Add to Order', addBtn));
+        addBtn.addEventListener('mouseleave', hideCustomTooltip);
 
         container.appendChild(card);
     });
@@ -767,6 +815,9 @@ function renderOrderList() {
                 <div class="order-item-actions">
                     <button class="order-item-edit" data-order-id="${item.id}" aria-label="Edit additional details" title="More Options">⋯</button>
                     <button class="order-item-remove" aria-label="Remove test" title="Remove">×</button>
+                    <button type="button" class="order-item-toggle" aria-expanded="true" aria-label="Collapse test details">
+                        <span class="accordion-icon">▼</span>
+                    </button>
                 </div>
             </div>
             <div class="order-item-details">
@@ -840,6 +891,18 @@ function renderOrderList() {
         removeBtn.addEventListener('click', () => {
             removeTestFromOrder(item.id);
         });
+
+        // Collapse/expand toggle
+        const toggleBtn = orderItem.querySelector('.order-item-toggle');
+        const detailsEl = orderItem.querySelector('.order-item-details');
+        if (toggleBtn && detailsEl) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+                toggleBtn.setAttribute('aria-expanded', !isExpanded);
+                detailsEl.classList.toggle('collapsed', isExpanded);
+            });
+        }
 
         // Inline field inputs - handle all editable fields
         const fieldInputs = orderItem.querySelectorAll('.order-field-input, .order-field-select');
@@ -1589,7 +1652,8 @@ let orderDetailsData = {
         time: new Date().toTimeString().slice(0, 5),
         location: '',
         notes: '',
-        urgent: false
+        urgent: false,
+        billMethod: 'patient'
     }
 };
 
@@ -1689,9 +1753,6 @@ function populateOrderDetailsForm() {
     // Provider Information
     document.getElementById('provider-name').value = orderDetailsData.provider.name || '';
     document.getElementById('provider-npi').value = orderDetailsData.provider.npi || '';
-    document.getElementById('provider-dept').value = orderDetailsData.provider.dept || '';
-    document.getElementById('provider-phone').value = orderDetailsData.provider.phone || '';
-    document.getElementById('provider-address').value = orderDetailsData.provider.address || '';
 
     // Insurance
     document.getElementById('insurance-primary').value = orderDetailsData.insurance.primary || '';
@@ -1707,6 +1768,12 @@ function populateOrderDetailsForm() {
     document.getElementById('order-location').value = orderDetailsData.order.location || '';
     document.getElementById('order-notes').value = orderDetailsData.order.notes || '';
     document.getElementById('order-urgent').checked = orderDetailsData.order.urgent || false;
+
+    // Bill Method
+    const billMethodEl = document.getElementById('bill-method');
+    if (billMethodEl) {
+        billMethodEl.value = orderDetailsData.order.billMethod || 'patient';
+    }
 }
 
 function saveOrderDetails() {
@@ -1724,9 +1791,6 @@ function saveOrderDetails() {
 
     orderDetailsData.provider.name = document.getElementById('provider-name').value;
     orderDetailsData.provider.npi = document.getElementById('provider-npi').value;
-    orderDetailsData.provider.dept = document.getElementById('provider-dept').value;
-    orderDetailsData.provider.phone = document.getElementById('provider-phone').value;
-    orderDetailsData.provider.address = document.getElementById('provider-address').value;
 
     orderDetailsData.insurance.primary = document.getElementById('insurance-primary').value;
     orderDetailsData.insurance.memberId = document.getElementById('insurance-member-id').value;
@@ -1740,6 +1804,11 @@ function saveOrderDetails() {
     orderDetailsData.order.location = document.getElementById('order-location').value;
     orderDetailsData.order.notes = document.getElementById('order-notes').value;
     orderDetailsData.order.urgent = document.getElementById('order-urgent').checked;
+
+    const billMethodEl = document.getElementById('bill-method');
+    if (billMethodEl) {
+        orderDetailsData.order.billMethod = billMethodEl.value;
+    }
 
     // Save to localStorage
     saveOrderDetailsData();
