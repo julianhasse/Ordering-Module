@@ -395,7 +395,7 @@ function renderPanels() {
                     </div>
                 </div>
                 <div class="pick-list-actions">
-                    <button class="pick-list-add-btn" aria-label="Add ${pickList.name}">
+                    <button class="pick-list-add-btn" aria-label="Add to Order" title="Add to Order">
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8 3V13M3 8H13" stroke="#0066cc" stroke-width="2" stroke-linecap="round"/>
                         </svg>
@@ -411,7 +411,7 @@ function renderPanels() {
             pickListCard.innerHTML = `
                 <span class="chip-acronym">${pickList.name.substring(0, 8)}</span>
                 <div class="chip-actions">
-                    <span class="chip-icon">+</span>
+                    <span class="chip-icon" title="Add to Order">+</span>
                     <button class="pick-list-delete-btn-small" aria-label="Delete ${pickList.name}" data-pick-list-id="${pickList.id}">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M2 4H14M12.6667 4V13.3333C12.6667 14 12 14.6667 11.3333 14.6667H4.66667C4 14.6667 3.33333 14 3.33333 13.3333V4M5.33333 4V2.66667C5.33333 2 6 1.33333 6.66667 1.33333H9.33333C10 1.33333 10.6667 2 10.6667 2.66667V4M6.66667 7.33333V11.3333M9.33333 7.33333V11.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -501,7 +501,7 @@ function renderMiniChips(container, tests) {
         chip.innerHTML = `
             <span class="chip-acronym">${acronym}</span>
             ${addedCheckmark}
-            <span class="chip-icon">+</span>
+            <span class="chip-icon" title="Add to Order">+</span>
         `;
 
         chip.addEventListener('click', () => {
@@ -561,7 +561,7 @@ function renderDetailedCards(container, tests) {
                     ${aliasesText ? `<span class="test-card-separator">•</span><span class="test-card-aliases">${aliasesText}</span>` : ''}
                 </div>
             </div>
-            <button class="test-card-add-btn" aria-label="Add ${test.name}">
+            <button class="test-card-add-btn" aria-label="Add to Order" title="Add to Order">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 3V13M3 8H13" stroke="#0066cc" stroke-width="2" stroke-linecap="round"/>
                 </svg>
@@ -808,15 +808,15 @@ function renderOrderList() {
                 </div>
                 <div class="order-item-row">
                     <div class="order-item-field order-item-field-full">
-                        <label class="field-label">Clinical Indication</label>
+                        <label class="field-label">Special Instructions</label>
                         <input 
                             type="text" 
                             class="order-field-input" 
-                            placeholder="Enter clinical indication..."
+                            placeholder="Enter special instructions..."
                             value="${item.clinicalIndication || ''}"
                             data-order-id="${item.id}"
                             data-field="clinicalIndication"
-                            aria-label="Clinical indication for ${test.name}"
+                            aria-label="Special instructions for ${test.name}"
                         >
                     </div>
                 </div>
