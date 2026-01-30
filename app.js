@@ -49,9 +49,52 @@ function hideCustomTooltip() {
     }
 }
 
+// Diagnosis code (ICD-10) combobox
+let diagnosisComboboxEl = null;
+let currentDiagnosisInput = null;
+
+function initDiagnosisCombobox() {
+    diagnosisComboboxEl = document.getElementById('diagnosis-combobox');
+    if (!diagnosisComboboxEl) return;
+    diagnosisComboboxEl.addEventListener('click', (e) => {
+        const item = e.target.closest('.diagnosis-combobox-item');
+        if (item && currentDiagnosisInput) {
+            const code = item.dataset.code;
+            if (code) {
+                currentDiagnosisInput.value = code;
+                currentDiagnosisInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            hideDiagnosisCombobox();
+        }
+    });
+}
+
+function showDiagnosisCombobox(inputEl) {
+    if (!diagnosisComboboxEl || !inputEl) return;
+    currentDiagnosisInput = inputEl;
+    const query = (inputEl.value || '').trim();
+    const suggestions = getIcd10Suggestions(query);
+    const rect = inputEl.getBoundingClientRect();
+    diagnosisComboboxEl.innerHTML = suggestions.length
+        ? suggestions.map(code => `<div class="diagnosis-combobox-item" data-code="${code}" role="option">${code}</div>`).join('')
+        : '<div class="diagnosis-combobox-item" style="color:#999;cursor:default">No suggestions</div>';
+    diagnosisComboboxEl.style.left = `${rect.left}px`;
+    diagnosisComboboxEl.style.top = `${rect.bottom + 4}px`;
+    diagnosisComboboxEl.style.minWidth = `${Math.max(rect.width, 120)}px`;
+    diagnosisComboboxEl.classList.add('show');
+}
+
+function hideDiagnosisCombobox() {
+    if (diagnosisComboboxEl) {
+        diagnosisComboboxEl.classList.remove('show');
+    }
+    currentDiagnosisInput = null;
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     initCustomTooltip();
+    initDiagnosisCombobox();
     initializeAccountNumber();
     initializeTabs();
     initializeViewToggle();
@@ -66,6 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==================== ACCOUNT NUMBER ====================
+
+function updateSignOrderButtonState() {
+    if (!signOrderBtn || !accountInput) return;
+    const hasAccount = (accountInput.value || '').trim() !== '';
+    const hasTests = currentOrder.length >= 1;
+    const enabled = hasAccount && hasTests;
+    signOrderBtn.disabled = !enabled;
+    if (enabled) {
+        signOrderBtn.setAttribute('aria-label', 'Sign and submit order');
+    } else if (!hasAccount) {
+        signOrderBtn.setAttribute('aria-label', 'Select an account number to enable');
+    } else {
+        signOrderBtn.setAttribute('aria-label', 'Add at least one test to enable');
+    }
+}
 
 function initializeAccountNumber() {
     if (!accountInput || !accountDropdown) return;
@@ -92,8 +150,14 @@ function initializeAccountNumber() {
             // Enable search field and focus on it
             searchInput.disabled = false;
             searchInput.focus();
+
+            // Enable Sign & Order button once account is selected
+            updateSignOrderButtonState();
         });
     });
+
+    // Initial state: enable Sign & Order only if account already has a value
+    updateSignOrderButtonState();
 
     // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
@@ -728,6 +792,7 @@ function addTestToOrder(testId) {
     // Update UI
     renderOrderList();
     updateCost();
+    updateSignOrderButtonState();
     // Re-render quick selections to show "Added" chips
     renderQuickSelections();
 }
@@ -765,6 +830,7 @@ function removeTestFromOrder(orderId) {
     currentOrder = currentOrder.filter(item => item.id !== orderId);
     renderOrderList();
     updateCost();
+    updateSignOrderButtonState();
     // Re-render quick selections to update "Added" chips
     renderQuickSelections();
 }
@@ -779,6 +845,7 @@ function handleClearAll() {
         currentOrder = [];
         renderOrderList();
         updateCost();
+        updateSignOrderButtonState();
         // Re-render quick selections to update "Added" chips
         renderQuickSelections();
     }
@@ -824,7 +891,7 @@ function renderOrderList() {
                 <div class="order-item-row">
                     <div class="order-item-field">
                         <div class="field-label-row">
-                            <label class="field-label">ICD-10</label>
+                            <label class="field-label">Diagnosis code</label>
                             ${item.icd10 ? `<a href="#" class="add-to-all-link" data-order-id="${item.id}" data-field="icd10">Add to all</a>` : ''}
                         </div>
                         <input 
@@ -834,7 +901,7 @@ function renderOrderList() {
                             value="${item.icd10 || ''}"
                             data-order-id="${item.id}"
                             data-field="icd10"
-                            aria-label="ICD-10 code for ${test.name}"
+                            aria-label="Diagnosis code for ${test.name}"
                         >
                     </div>
                     ${test.requiresSpecimen ? `
@@ -922,8 +989,14 @@ function renderOrderList() {
                         } else if (!e.target.value) {
                             item.diagnosisCodes = [];
                         }
+                        showDiagnosisCombobox(input);
                     }
                 });
+                // Diagnosis code (ICD-10) combobox: show on focus/input, hide on blur
+                if (fieldName === 'icd10') {
+                    input.addEventListener('focus', () => showDiagnosisCombobox(input));
+                    input.addEventListener('blur', () => setTimeout(hideDiagnosisCombobox, 200));
+                }
             } else if (input.tagName === 'SELECT') {
                 input.addEventListener('change', (e) => {
                     item[fieldName] = e.target.value;
@@ -1251,6 +1324,7 @@ function populateReviewContent() {
         const primaryDx = (item.diagnosisCodes && item.diagnosisCodes.length > 0)
             ? item.diagnosisCodes[0]
             : (item.icd10 || '');
+        const dxDescription = getIcd10Description(primaryDx);
         html += `
             <div class="review-test-item" data-order-id="${item.id}">
                 <div class="review-test-line-primary">
@@ -1258,8 +1332,8 @@ function populateReviewContent() {
                     <span class="review-test-code">${test.cptCode}</span>
                 </div>
                 <div class="review-test-line-secondary">
-                    <span class="review-test-dx-label">ICD-10:</span>
-                    <span class="review-test-dx-value review-value" contenteditable="true" data-order-id="${item.id}" data-field="icd10">${primaryDx}</span>
+                    <span class="review-test-dx-label">ICD-10</span>
+                    <span class="review-test-dx-value review-value" contenteditable="true" data-order-id="${item.id}" data-field="icd10">${primaryDx}</span>${dxDescription ? ` <span class="review-test-dx-desc">${dxDescription}</span>` : ''}
                 </div>
             </div>
         `;
@@ -1654,6 +1728,18 @@ let orderDetailsData = {
         notes: '',
         urgent: false,
         billMethod: 'patient'
+    },
+    guarantor: {
+        addGuarantor: false,
+        lastName: '',
+        firstName: '',
+        address: '',
+        city: '',
+        state: '',
+        zip: '',
+        phone: '',
+        email: '',
+        relationship: ''
     }
 };
 
@@ -1709,6 +1795,15 @@ function initializeOrderDetailsAccordion() {
                 saveOrderDetailsData();
             });
         }
+
+        // Add Guarantor checkbox: show/hide Guarantor Information section
+        const addGuarantorCheckbox = document.getElementById('add-guarantor-checkbox');
+        const guarantorSection = document.getElementById('guarantor-section');
+        if (addGuarantorCheckbox && guarantorSection) {
+            addGuarantorCheckbox.addEventListener('change', () => {
+                guarantorSection.style.display = addGuarantorCheckbox.checked ? 'block' : 'none';
+            });
+        }
     }
 }
 
@@ -1750,6 +1845,35 @@ function populateOrderDetailsForm() {
     document.getElementById('patient-phone').value = orderDetailsData.patient.phone || '';
     document.getElementById('patient-email').value = orderDetailsData.patient.email || '';
 
+    // Add Guarantor checkbox and Guarantor Information
+    const addGuarantorCheckbox = document.getElementById('add-guarantor-checkbox');
+    const guarantorSection = document.getElementById('guarantor-section');
+    if (addGuarantorCheckbox) {
+        addGuarantorCheckbox.checked = orderDetailsData.guarantor && orderDetailsData.guarantor.addGuarantor;
+    }
+    if (guarantorSection && addGuarantorCheckbox) {
+        guarantorSection.style.display = addGuarantorCheckbox.checked ? 'block' : 'none';
+    }
+    const g = orderDetailsData.guarantor || {};
+    const guarantorLast = document.getElementById('guarantor-last-name');
+    const guarantorFirst = document.getElementById('guarantor-first-name');
+    if (guarantorLast) guarantorLast.value = g.lastName || '';
+    if (guarantorFirst) guarantorFirst.value = g.firstName || '';
+    const guarantorAddr = document.getElementById('guarantor-address');
+    if (guarantorAddr) guarantorAddr.value = g.address || '';
+    const guarantorCity = document.getElementById('guarantor-city');
+    if (guarantorCity) guarantorCity.value = g.city || '';
+    const guarantorState = document.getElementById('guarantor-state');
+    if (guarantorState) guarantorState.value = g.state || '';
+    const guarantorZip = document.getElementById('guarantor-zip');
+    if (guarantorZip) guarantorZip.value = g.zip || '';
+    const guarantorPhone = document.getElementById('guarantor-phone');
+    if (guarantorPhone) guarantorPhone.value = g.phone || '';
+    const guarantorEmail = document.getElementById('guarantor-email');
+    if (guarantorEmail) guarantorEmail.value = g.email || '';
+    const guarantorRel = document.getElementById('guarantor-relationship');
+    if (guarantorRel) guarantorRel.value = g.relationship || '';
+
     // Provider Information
     document.getElementById('provider-name').value = orderDetailsData.provider.name || '';
     document.getElementById('provider-npi').value = orderDetailsData.provider.npi || '';
@@ -1767,7 +1891,6 @@ function populateOrderDetailsForm() {
     document.getElementById('order-time').value = orderDetailsData.order.time || new Date().toTimeString().slice(0, 5);
     document.getElementById('order-location').value = orderDetailsData.order.location || '';
     document.getElementById('order-notes').value = orderDetailsData.order.notes || '';
-    document.getElementById('order-urgent').checked = orderDetailsData.order.urgent || false;
 
     // Bill Method
     const billMethodEl = document.getElementById('bill-method');
@@ -1789,6 +1912,20 @@ function saveOrderDetails() {
     orderDetailsData.patient.phone = document.getElementById('patient-phone').value;
     orderDetailsData.patient.email = document.getElementById('patient-email').value;
 
+    const addGuarantorEl = document.getElementById('add-guarantor-checkbox');
+    if (orderDetailsData.guarantor) {
+        orderDetailsData.guarantor.addGuarantor = addGuarantorEl ? addGuarantorEl.checked : false;
+        orderDetailsData.guarantor.lastName = (document.getElementById('guarantor-last-name') || {}).value || '';
+        orderDetailsData.guarantor.firstName = (document.getElementById('guarantor-first-name') || {}).value || '';
+        orderDetailsData.guarantor.address = (document.getElementById('guarantor-address') || {}).value || '';
+        orderDetailsData.guarantor.city = (document.getElementById('guarantor-city') || {}).value || '';
+        orderDetailsData.guarantor.state = (document.getElementById('guarantor-state') || {}).value || '';
+        orderDetailsData.guarantor.zip = (document.getElementById('guarantor-zip') || {}).value || '';
+        orderDetailsData.guarantor.phone = (document.getElementById('guarantor-phone') || {}).value || '';
+        orderDetailsData.guarantor.email = (document.getElementById('guarantor-email') || {}).value || '';
+        orderDetailsData.guarantor.relationship = (document.getElementById('guarantor-relationship') || {}).value || '';
+    }
+
     orderDetailsData.provider.name = document.getElementById('provider-name').value;
     orderDetailsData.provider.npi = document.getElementById('provider-npi').value;
 
@@ -1803,7 +1940,6 @@ function saveOrderDetails() {
     orderDetailsData.order.time = document.getElementById('order-time').value;
     orderDetailsData.order.location = document.getElementById('order-location').value;
     orderDetailsData.order.notes = document.getElementById('order-notes').value;
-    orderDetailsData.order.urgent = document.getElementById('order-urgent').checked;
 
     const billMethodEl = document.getElementById('bill-method');
     if (billMethodEl) {

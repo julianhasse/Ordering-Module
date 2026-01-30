@@ -1,6 +1,40 @@
 // Mock Lab Test Data
 // This structure is designed to be easily replaced with API calls
 
+// Common ICD-10 codes with descriptions (can be replaced with API)
+const ICD10_LIST = [
+    { code: 'E11.9', description: 'Type 2 diabetes mellitus without complications' },
+    { code: 'I10', description: 'Essential (primary) hypertension' },
+    { code: 'E78.00', description: 'Pure hypercholesterolemia, unspecified' },
+    { code: 'J06.9', description: 'Acute upper respiratory infection, unspecified' },
+    { code: 'M54.5', description: 'Low back pain' },
+    { code: 'R51', description: 'Headache' },
+    { code: 'K21.9', description: 'Gastro-esophageal reflux disease without esophagitis' },
+    { code: 'E66.9', description: 'Obesity, unspecified' },
+    { code: 'F32.9', description: 'Major depressive disorder, single episode, unspecified' },
+    { code: 'G47.33', description: 'Obstructive sleep apnea' },
+    { code: 'E11.65', description: 'Type 2 diabetes mellitus with hyperglycemia' },
+    { code: 'Z00.00', description: 'Encounter for general adult medical examination without abnormal findings' }
+];
+
+const ICD10_SUGGESTIONS = ICD10_LIST.map(item => item.code);
+
+function getIcd10Suggestions(query) {
+    if (!query || typeof query !== 'string') {
+        return ICD10_SUGGESTIONS.slice(0, 10);
+    }
+    const q = query.trim().toLowerCase();
+    if (q === '') return ICD10_SUGGESTIONS.slice(0, 10);
+    return ICD10_SUGGESTIONS.filter(code => code.toLowerCase().startsWith(q) || code.toLowerCase().includes(q)).slice(0, 10);
+}
+
+function getIcd10Description(code) {
+    if (!code || typeof code !== 'string') return '';
+    const trimmed = code.trim();
+    const found = ICD10_LIST.find(item => item.code === trimmed);
+    return found ? found.description : '';
+}
+
 const LAB_TESTS = [
     {
         id: 'cbc-001',
@@ -324,23 +358,23 @@ function savePickList(name, testIds) {
         testIds: testIds,
         createdAt: new Date().toISOString()
     };
-    
+
     PICK_LISTS.push(pickList);
-    
+
     // Save to localStorage
     try {
         localStorage.setItem('pickLists', JSON.stringify(PICK_LISTS));
     } catch (e) {
         console.warn('Could not save pick list to localStorage:', e);
     }
-    
+
     return pickList;
 }
 
 // Function to delete pick list
 function deletePickList(pickListId) {
     PICK_LISTS = PICK_LISTS.filter(list => list.id !== pickListId);
-    
+
     // Save to localStorage
     try {
         localStorage.setItem('pickLists', JSON.stringify(PICK_LISTS));
@@ -354,25 +388,25 @@ function searchTests(query) {
     if (!query || query.trim() === '') {
         return [];
     }
-    
+
     const lowerQuery = query.toLowerCase().trim();
-    
+
     return LAB_TESTS.filter(test => {
         // Search in name
         if (test.name.toLowerCase().includes(lowerQuery)) {
             return true;
         }
-        
+
         // Search in CPT code
         if (test.cptCode.includes(lowerQuery)) {
             return true;
         }
-        
+
         // Search in aliases
         if (test.aliases.some(alias => alias.toLowerCase().includes(lowerQuery))) {
             return true;
         }
-        
+
         return false;
     }).slice(0, 10); // Limit to 10 results
 }
