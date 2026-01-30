@@ -18,7 +18,28 @@ body {
     min-height: 100vh;
     height: 100vh;
     display: flex;
+    flex-direction: column;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* App header image - matches UI width */
+.app-header {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.app-header-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
+}
+
+.app-main {
+    display: flex;
+    flex: 1;
+    min-height: 0;
     position: relative;
 }
 

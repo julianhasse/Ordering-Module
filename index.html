@@ -14,363 +14,379 @@
 
 <body>
     <div class="container">
-        <!-- Review Sidebar (Left) -->
-        <div id="review-sidebar" class="review-sidebar">
-            <div class="sidebar-overlay"></div>
-            <div class="sidebar-content sidebar-content-left-review">
-                <div class="sidebar-header">
-                    <h2>
-                        <span class="review-header-title">
-                            <span class="review-header-icon">✓</span>
-                            <span>Order Summary</span>
+        <!-- App Header -->
+        <header class="app-header" role="banner">
+            <img src="assets/header.png"
+                alt="Laboratory Results, Clinical Decision Support, Orders, Oncology - Create Order"
+                class="app-header-img">
+        </header>
+        <!-- Main content wrapper -->
+        <div class="app-main">
+            <!-- Review Sidebar (Left) -->
+            <div id="review-sidebar" class="review-sidebar">
+                <div class="sidebar-overlay"></div>
+                <div class="sidebar-content sidebar-content-left-review">
+                    <div class="sidebar-header">
+                        <h2>
+                            <span class="review-header-title">
+                                <span class="review-header-icon">✓</span>
+                                <span>Order Summary</span>
+                            </span>
+                        </h2>
+                        <button id="review-close" class="sidebar-close" aria-label="Close review">×</button>
+                    </div>
+                    <div class="sidebar-body" id="review-body">
+                        <!-- Review content will be populated here -->
+                    </div>
+                    <div class="sidebar-footer">
+                        <button type="button" id="review-cancel" class="btn-ghost">Cancel</button>
+                        <button type="button" id="review-submit" class="btn-primary">Submit & Print PDF</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Left Pane: Search & Discovery (60%) -->
+            <div class="left-pane">
+                <!-- Zone 1: Omni-Search Header -->
+                <div class="search-header">
+                    <div class="account-wrapper">
+                        <label for="account-input" class="account-label">Account Number</label>
+                        <div class="account-input-wrapper">
+                            <input type="text" id="account-input" class="account-input"
+                                placeholder="Select account number to start your search" readonly autofocus
+                                aria-label="Account Number">
+                            <div id="account-dropdown" class="account-dropdown" role="listbox"
+                                aria-label="Account numbers">
+                                <div class="account-dropdown-item" data-account="12764098">12764098</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" class="search-input"
+                            placeholder="Search by Test Name, CPT Code, or Alias (e.g., 'Sugar' for Glucose)..."
+                            disabled aria-label="Search lab tests" aria-expanded="false" aria-haspopup="listbox"
+                            role="combobox">
+                        <div id="combobox" class="combobox" role="listbox" aria-label="Search results">
+                            <!-- Search results will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zone 2: Quick Selections & Bundles -->
+                <div class="quick-selections">
+                    <div class="tabs">
+                        <button class="tab-button active" data-tab="favorites">Favorites</button>
+                        <button class="tab-button" data-tab="panels">Pick Lists</button>
+                        <button class="tab-button" data-tab="recent">Recent Orders</button>
+                    </div>
+                    <div class="view-toggle-container">
+                        <div class="segmented-button-group">
+                            <button type="button" class="segmented-button" data-view="compact">Compact View</button>
+                            <button type="button" class="segmented-button active" data-view="detailed">Full
+                                Details</button>
+                        </div>
+                    </div>
+                    <div class="chips-container">
+                        <div id="favorites-chips" class="chips-grid active-tab-content"></div>
+                        <div id="panels-chips" class="chips-grid"></div>
+                        <div id="recent-chips" class="chips-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Pane: Current Order Summary (40%) -->
+            <div class="right-pane">
+                <!-- Order Details Accordion -->
+                <div class="order-details-accordion">
+                    <button class="accordion-header" id="order-details-accordion-toggle" aria-expanded="false">
+                        <span class="accordion-title">Order Details</span>
+                        <span id="npi-warning" class="npi-warning" style="display: none;">
+                            <span class="npi-warning-icon">⚠</span>
+                            <span class="npi-warning-text">Check NPI Number</span>
                         </span>
-                    </h2>
-                    <button id="review-close" class="sidebar-close" aria-label="Close review">×</button>
-                </div>
-                <div class="sidebar-body" id="review-body">
-                    <!-- Review content will be populated here -->
-                </div>
-                <div class="sidebar-footer">
-                    <button type="button" id="review-cancel" class="btn-ghost">Cancel</button>
-                    <button type="button" id="review-submit" class="btn-primary">Submit & Print PDF</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Left Pane: Search & Discovery (60%) -->
-        <div class="left-pane">
-            <!-- Zone 1: Omni-Search Header -->
-            <div class="search-header">
-                <div class="account-wrapper">
-                    <label for="account-input" class="account-label">Account Number</label>
-                    <div class="account-input-wrapper">
-                        <input type="text" id="account-input" class="account-input"
-                            placeholder="Select account number to start your search" readonly autofocus
-                            aria-label="Account Number">
-                        <div id="account-dropdown" class="account-dropdown" role="listbox" aria-label="Account numbers">
-                            <div class="account-dropdown-item" data-account="12764098">12764098</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="search-wrapper">
-                    <input type="text" id="searchInput" class="search-input"
-                        placeholder="Search by Test Name, CPT Code, or Alias (e.g., 'Sugar' for Glucose)..." disabled
-                        aria-label="Search lab tests" aria-expanded="false" aria-haspopup="listbox" role="combobox">
-                    <div id="combobox" class="combobox" role="listbox" aria-label="Search results">
-                        <!-- Search results will be inserted here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Zone 2: Quick Selections & Bundles -->
-            <div class="quick-selections">
-                <div class="tabs">
-                    <button class="tab-button active" data-tab="favorites">Favorites</button>
-                    <button class="tab-button" data-tab="panels">Pick Lists</button>
-                    <button class="tab-button" data-tab="recent">Recent Orders</button>
-                </div>
-                <div class="view-toggle-container">
-                    <div class="segmented-button-group">
-                        <button type="button" class="segmented-button" data-view="compact">Compact View</button>
-                        <button type="button" class="segmented-button active" data-view="detailed">Full Details</button>
-                    </div>
-                </div>
-                <div class="chips-container">
-                    <div id="favorites-chips" class="chips-grid active-tab-content"></div>
-                    <div id="panels-chips" class="chips-grid"></div>
-                    <div id="recent-chips" class="chips-grid"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Pane: Current Order Summary (40%) -->
-        <div class="right-pane">
-            <!-- Order Details Accordion -->
-            <div class="order-details-accordion">
-                <button class="accordion-header" id="order-details-accordion-toggle" aria-expanded="false">
-                    <span class="accordion-title">Order Details</span>
-                    <span id="npi-warning" class="npi-warning" style="display: none;">
-                        <span class="npi-warning-icon">⚠</span>
-                        <span class="npi-warning-text">Check NPI Number</span>
-                    </span>
-                    <span class="accordion-icon">▼</span>
-                </button>
-                <div class="accordion-content" id="order-details-accordion-content">
-                    <form id="order-details-form">
-                        <!-- Patient Information -->
-                        <div class="form-section">
-                            <h3 class="section-title">Patient Information</h3>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="patient-name">Full Name</label>
-                                    <input type="text" id="patient-name" class="form-input" placeholder="Last, First">
+                        <span class="accordion-icon">▼</span>
+                    </button>
+                    <div class="accordion-content" id="order-details-accordion-content">
+                        <form id="order-details-form">
+                            <!-- Patient Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Patient Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-name">Full Name</label>
+                                        <input type="text" id="patient-name" class="form-input"
+                                            placeholder="Last, First">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-dob">Date of Birth</label>
+                                        <input type="date" id="patient-dob" class="form-input">
+                                    </div>
                                 </div>
-                                <div class="form-group form-group-half">
-                                    <label for="patient-dob">Date of Birth</label>
-                                    <input type="date" id="patient-dob" class="form-input">
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-mrn">MRN</label>
+                                        <input type="text" id="patient-mrn" class="form-input"
+                                            placeholder="Medical Record Number">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-gender">Gender</label>
+                                        <select id="patient-gender" class="form-select">
+                                            <option value="">Select...</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                            <option value="other">Other</option>
+                                            <option value="prefer-not-to-say">Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="patient-address">Address</label>
+                                    <input type="text" id="patient-address" class="form-input"
+                                        placeholder="Street Address">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-city">City</label>
+                                        <input type="text" id="patient-city" class="form-input">
+                                    </div>
+                                    <div class="form-group form-group-quarter">
+                                        <label for="patient-state">State</label>
+                                        <input type="text" id="patient-state" class="form-input" maxlength="2"
+                                            placeholder="ST">
+                                    </div>
+                                    <div class="form-group form-group-quarter">
+                                        <label for="patient-zip">ZIP</label>
+                                        <input type="text" id="patient-zip" class="form-input" maxlength="10"
+                                            placeholder="12345">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-phone">Phone</label>
+                                        <input type="tel" id="patient-phone" class="form-input"
+                                            placeholder="(555) 123-4567">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="patient-email">Email</label>
+                                        <input type="email" id="patient-email" class="form-input"
+                                            placeholder="patient@example.com">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-checkbox-label">
+                                        <input type="checkbox" id="add-guarantor-checkbox" class="form-checkbox">
+                                        <span>Add Guarantor</span>
+                                    </label>
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="patient-mrn">MRN</label>
-                                    <input type="text" id="patient-mrn" class="form-input"
-                                        placeholder="Medical Record Number">
+
+                            <!-- Guarantor Information (shown when Add Guarantor is checked) -->
+                            <div id="guarantor-section" class="form-section guarantor-section" style="display: none;">
+                                <h3 class="section-title">Guarantor Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="guarantor-last-name">Last Name</label>
+                                        <input type="text" id="guarantor-last-name" class="form-input">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="guarantor-first-name">First Name</label>
+                                        <input type="text" id="guarantor-first-name" class="form-input">
+                                    </div>
                                 </div>
-                                <div class="form-group form-group-half">
-                                    <label for="patient-gender">Gender</label>
-                                    <select id="patient-gender" class="form-select">
+                                <div class="form-group">
+                                    <label for="guarantor-address">Address</label>
+                                    <input type="text" id="guarantor-address" class="form-input"
+                                        placeholder="Street Address">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="guarantor-city">City</label>
+                                        <input type="text" id="guarantor-city" class="form-input">
+                                    </div>
+                                    <div class="form-group form-group-quarter">
+                                        <label for="guarantor-state">State</label>
+                                        <input type="text" id="guarantor-state" class="form-input" maxlength="2"
+                                            placeholder="ST">
+                                    </div>
+                                    <div class="form-group form-group-quarter">
+                                        <label for="guarantor-zip">ZIP Code</label>
+                                        <input type="text" id="guarantor-zip" class="form-input" maxlength="10"
+                                            placeholder="12345">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="guarantor-phone">Phone</label>
+                                        <input type="tel" id="guarantor-phone" class="form-input"
+                                            placeholder="(555) 123-4567">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="guarantor-email">Email</label>
+                                        <input type="email" id="guarantor-email" class="form-input"
+                                            placeholder="email@example.com">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guarantor-relationship">Relationship to Patient</label>
+                                    <select id="guarantor-relationship" class="form-select">
                                         <option value="">Select...</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
-                                        <option value="prefer-not-to-say">Prefer not to say</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="patient-address">Address</label>
-                                <input type="text" id="patient-address" class="form-input" placeholder="Street Address">
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="patient-city">City</label>
-                                    <input type="text" id="patient-city" class="form-input">
-                                </div>
-                                <div class="form-group form-group-quarter">
-                                    <label for="patient-state">State</label>
-                                    <input type="text" id="patient-state" class="form-input" maxlength="2"
-                                        placeholder="ST">
-                                </div>
-                                <div class="form-group form-group-quarter">
-                                    <label for="patient-zip">ZIP</label>
-                                    <input type="text" id="patient-zip" class="form-input" maxlength="10"
-                                        placeholder="12345">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="patient-phone">Phone</label>
-                                    <input type="tel" id="patient-phone" class="form-input"
-                                        placeholder="(555) 123-4567">
-                                </div>
-                                <div class="form-group form-group-half">
-                                    <label for="patient-email">Email</label>
-                                    <input type="email" id="patient-email" class="form-input"
-                                        placeholder="patient@example.com">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-checkbox-label">
-                                    <input type="checkbox" id="add-guarantor-checkbox" class="form-checkbox">
-                                    <span>Add Guarantor</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Guarantor Information (shown when Add Guarantor is checked) -->
-                        <div id="guarantor-section" class="form-section guarantor-section" style="display: none;">
-                            <h3 class="section-title">Guarantor Information</h3>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="guarantor-last-name">Last Name</label>
-                                    <input type="text" id="guarantor-last-name" class="form-input">
-                                </div>
-                                <div class="form-group form-group-half">
-                                    <label for="guarantor-first-name">First Name</label>
-                                    <input type="text" id="guarantor-first-name" class="form-input">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="guarantor-address">Address</label>
-                                <input type="text" id="guarantor-address" class="form-input"
-                                    placeholder="Street Address">
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="guarantor-city">City</label>
-                                    <input type="text" id="guarantor-city" class="form-input">
-                                </div>
-                                <div class="form-group form-group-quarter">
-                                    <label for="guarantor-state">State</label>
-                                    <input type="text" id="guarantor-state" class="form-input" maxlength="2"
-                                        placeholder="ST">
-                                </div>
-                                <div class="form-group form-group-quarter">
-                                    <label for="guarantor-zip">ZIP Code</label>
-                                    <input type="text" id="guarantor-zip" class="form-input" maxlength="10"
-                                        placeholder="12345">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="guarantor-phone">Phone</label>
-                                    <input type="tel" id="guarantor-phone" class="form-input"
-                                        placeholder="(555) 123-4567">
-                                </div>
-                                <div class="form-group form-group-half">
-                                    <label for="guarantor-email">Email</label>
-                                    <input type="email" id="guarantor-email" class="form-input"
-                                        placeholder="email@example.com">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="guarantor-relationship">Relationship to Patient</label>
-                                <select id="guarantor-relationship" class="form-select">
-                                    <option value="">Select...</option>
-                                    <option value="spouse">Spouse</option>
-                                    <option value="parent">Parent</option>
-                                    <option value="sibling">Sibling</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Provider Information -->
-                        <div class="form-section">
-                            <h3 class="section-title">Provider Information</h3>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="provider-name">Ordering Provider</label>
-                                    <input type="text" id="provider-name" class="form-input"
-                                        placeholder="Dr. Last, First">
-                                </div>
-                                <div class="form-group form-group-half">
-                                    <label for="provider-npi">NPI</label>
-                                    <input type="text" id="provider-npi" class="form-input"
-                                        placeholder="National Provider Identifier">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Bill Method -->
-                        <div class="form-section">
-                            <h3 class="section-title">Bill Method</h3>
-                            <div class="form-group">
-                                <label for="bill-method">Bill Method</label>
-                                <select id="bill-method" class="form-select">
-                                    <option value="patient" selected>Patient</option>
-                                    <option value="client">Client</option>
-                                    <option value="private-insurance">Private Insurance</option>
-                                    <option value="medicaid">Medicaid</option>
-                                    <option value="medicare">Medicare</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Insurance Details -->
-                        <div class="form-section">
-                            <h3 class="section-title">Insurance</h3>
-                            <div class="form-group">
-                                <label for="insurance-primary">Primary Insurance</label>
-                                <input type="text" id="insurance-primary" class="form-input"
-                                    placeholder="Insurance Company Name">
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="insurance-member-id">Member ID</label>
-                                    <input type="text" id="insurance-member-id" class="form-input"
-                                        placeholder="Insurance Member ID">
-                                </div>
-                                <div class="form-group form-group-half">
-                                    <label for="insurance-group">Group Number</label>
-                                    <input type="text" id="insurance-group" class="form-input"
-                                        placeholder="Group Number">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="insurance-policy-holder">Policy Holder Name</label>
-                                    <input type="text" id="insurance-policy-holder" class="form-input"
-                                        placeholder="Policy Holder">
-                                </div>
-                                <div class="form-group form-group-half">
-                                    <label for="insurance-relationship">Relationship to Patient</label>
-                                    <select id="insurance-relationship" class="form-select">
-                                        <option value="self">Self</option>
                                         <option value="spouse">Spouse</option>
-                                        <option value="child">Child</option>
+                                        <option value="parent">Parent</option>
+                                        <option value="sibling">Sibling</option>
                                         <option value="other">Other</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="insurance-secondary">Secondary Insurance (if applicable)</label>
-                                <input type="text" id="insurance-secondary" class="form-input"
-                                    placeholder="Secondary Insurance Company">
-                            </div>
-                        </div>
 
-                        <!-- Order Information -->
-                        <div class="form-section">
-                            <h3 class="section-title">Order Information</h3>
-                            <div class="form-row">
-                                <div class="form-group form-group-half">
-                                    <label for="order-date">Order Date</label>
-                                    <input type="date" id="order-date" class="form-input">
-                                </div>
-                                <div class="form-group form-group-half">
-                                    <label for="order-time">Order Time</label>
-                                    <input type="time" id="order-time" class="form-input">
+                            <!-- Provider Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Provider Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="provider-name">Ordering Provider</label>
+                                        <input type="text" id="provider-name" class="form-input"
+                                            placeholder="Dr. Last, First">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="provider-npi">NPI</label>
+                                        <input type="text" id="provider-npi" class="form-input"
+                                            placeholder="National Provider Identifier">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="order-location">Order Location</label>
-                                <input type="text" id="order-location" class="form-input"
-                                    placeholder="Clinic/Hospital Name">
-                            </div>
-                            <div class="form-group">
-                                <label for="order-notes">Order Notes</label>
-                                <textarea id="order-notes" class="form-textarea" rows="3"
-                                    placeholder="Additional notes about this order..."></textarea>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
 
-            <!-- Zone 3: Active Order List -->
-            <div class="order-header">
-                <div class="order-header-top">
-                    <h2 id="order-title">Current Order (<span id="order-count">0</span>)</h2>
-                    <button id="clear-all-btn" class="btn-clear-all" aria-label="Delete all tests">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M2 4H14M12.6667 4V13.3333C12.6667 14 12 14.6667 11.3333 14.6667H4.66667C4 14.6667 3.33333 14 3.33333 13.3333V4M5.33333 4V2.66667C5.33333 2 6 1.33333 6.66667 1.33333H9.33333C10 1.33333 10.6667 2 10.6667 2.66667V4M6.66667 7.33333V11.3333M9.33333 7.33333V11.3333"
-                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                        <span>Delete</span>
-                    </button>
+                            <!-- Bill Method -->
+                            <div class="form-section">
+                                <h3 class="section-title">Bill Method</h3>
+                                <div class="form-group">
+                                    <label for="bill-method">Bill Method</label>
+                                    <select id="bill-method" class="form-select">
+                                        <option value="patient" selected>Patient</option>
+                                        <option value="client">Client</option>
+                                        <option value="private-insurance">Private Insurance</option>
+                                        <option value="medicaid">Medicaid</option>
+                                        <option value="medicare">Medicare</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Insurance Details -->
+                            <div class="form-section">
+                                <h3 class="section-title">Insurance</h3>
+                                <div class="form-group">
+                                    <label for="insurance-primary">Primary Insurance</label>
+                                    <input type="text" id="insurance-primary" class="form-input"
+                                        placeholder="Insurance Company Name">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="insurance-member-id">Member ID</label>
+                                        <input type="text" id="insurance-member-id" class="form-input"
+                                            placeholder="Insurance Member ID">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="insurance-group">Group Number</label>
+                                        <input type="text" id="insurance-group" class="form-input"
+                                            placeholder="Group Number">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="insurance-policy-holder">Policy Holder Name</label>
+                                        <input type="text" id="insurance-policy-holder" class="form-input"
+                                            placeholder="Policy Holder">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="insurance-relationship">Relationship to Patient</label>
+                                        <select id="insurance-relationship" class="form-select">
+                                            <option value="self">Self</option>
+                                            <option value="spouse">Spouse</option>
+                                            <option value="child">Child</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="insurance-secondary">Secondary Insurance (if applicable)</label>
+                                    <input type="text" id="insurance-secondary" class="form-input"
+                                        placeholder="Secondary Insurance Company">
+                                </div>
+                            </div>
+
+                            <!-- Order Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Order Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="order-date">Order Date</label>
+                                        <input type="date" id="order-date" class="form-input">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="order-time">Order Time</label>
+                                        <input type="time" id="order-time" class="form-input">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-location">Order Location</label>
+                                    <input type="text" id="order-location" class="form-input"
+                                        placeholder="Clinic/Hospital Name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-notes">Order Notes</label>
+                                    <textarea id="order-notes" class="form-textarea" rows="3"
+                                        placeholder="Additional notes about this order..."></textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="priority-toggle">
-                    <label class="toggle-label">
-                        <input type="radio" name="priority" value="routine" checked>
-                        <span>Routine</span>
-                    </label>
-                    <label class="toggle-label">
-                        <input type="radio" name="priority" value="stat">
-                        <span>STAT</span>
-                    </label>
+
+                <!-- Zone 3: Active Order List -->
+                <div class="order-header">
+                    <div class="order-header-top">
+                        <h2 id="order-title">Current Order (<span id="order-count">0</span>)</h2>
+                        <button id="clear-all-btn" class="btn-clear-all" aria-label="Delete all tests">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M2 4H14M12.6667 4V13.3333C12.6667 14 12 14.6667 11.3333 14.6667H4.66667C4 14.6667 3.33333 14 3.33333 13.3333V4M5.33333 4V2.66667C5.33333 2 6 1.33333 6.66667 1.33333H9.33333C10 1.33333 10.6667 2 10.6667 2.66667V4M6.66667 7.33333V11.3333M9.33333 7.33333V11.3333"
+                                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                    <div class="priority-toggle">
+                        <label class="toggle-label">
+                            <input type="radio" name="priority" value="routine" checked>
+                            <span>Routine</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="radio" name="priority" value="stat">
+                            <span>STAT</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="order-list" class="order-list" role="list" aria-label="Selected tests">
+                    <div class="empty-state">
+                        <p>No tests selected. Use search or quick selections to add tests.</p>
+                    </div>
+                </div>
+                <!-- Zone 4: Review & Sign Bar (Fixed Bottom) -->
+                <div class="bottom-bar">
+                    <div class="bottom-bar-left">
+                        <!-- Order Details button removed - now in accordion -->
+                    </div>
+                    <div class="bottom-bar-right">
+                        <button id="save-draft-btn" class="btn-ghost">Save as Pick List</button>
+                        <button id="sign-order-btn" class="btn-primary" disabled
+                            aria-label="Select an account number to enable">
+                            Sign & Order
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div id="order-list" class="order-list" role="list" aria-label="Selected tests">
-                <div class="empty-state">
-                    <p>No tests selected. Use search or quick selections to add tests.</p>
-                </div>
-            </div>
-            <!-- Zone 4: Review & Sign Bar (Fixed Bottom) -->
-            <div class="bottom-bar">
-                <div class="bottom-bar-left">
-                    <!-- Order Details button removed - now in accordion -->
-                </div>
-                <div class="bottom-bar-right">
-                    <button id="save-draft-btn" class="btn-ghost">Save as Pick List</button>
-                    <button id="sign-order-btn" class="btn-primary" disabled
-                        aria-label="Select an account number to enable">
-                        Sign & Order
-                    </button>
-                </div>
-            </div>
+            <!-- end .app-main -->
 
             <!-- Order Details Sidebar Panel (Left) -->
             <div id="order-details-sidebar" class="order-details-sidebar">
