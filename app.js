@@ -358,13 +358,30 @@ function renderCombobox(results) {
             </span>
         ` : '';
 
+        const comboboxStarPath = test.isFavorite
+            ? '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>'
+            : '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>';
+
         item.innerHTML = `
             <span class="combobox-item-name">${test.name}</span>
             <span class="combobox-item-code">${test.cptCode}</span>
             ${addedChip}
+            <button type="button" class="combobox-favorite" aria-label="${test.isFavorite ? 'Remove from favorites' : 'Add to favorites'}" data-test-id="${test.id}" title="${test.isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
+                <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${comboboxStarPath}</svg>
+            </button>
         `;
 
-        item.addEventListener('click', () => {
+        const favoriteBtn = item.querySelector('.combobox-favorite');
+        if (favoriteBtn) {
+            favoriteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFavorite(test.id);
+                renderQuickSelections();
+            });
+        }
+
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.combobox-favorite')) return;
             addTestToOrder(test.id);
         });
 
@@ -614,8 +631,15 @@ function renderMiniChips(container, tests) {
             <span class="added-chip-compact" title="Added to order">✓</span>
         ` : '';
 
+        const chipStarPath = test.isFavorite
+            ? '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>'
+            : '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>';
+
         chip.innerHTML = `
             <span class="chip-acronym">${acronym}</span>
+            <button type="button" class="chip-favorite" aria-label="${test.isFavorite ? 'Remove from favorites' : 'Add to favorites'}" data-test-id="${test.id}" title="${test.isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
+                <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${chipStarPath}</svg>
+            </button>
             ${addedCheckmark}
             <span class="chip-icon">+</span>
         `;
@@ -626,7 +650,19 @@ function renderMiniChips(container, tests) {
             chipIcon.addEventListener('mouseleave', hideCustomTooltip);
         }
 
-        chip.addEventListener('click', () => {
+        const chipFavoriteBtn = chip.querySelector('.chip-favorite');
+        if (chipFavoriteBtn) {
+            chipFavoriteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFavorite(test.id);
+                renderQuickSelections();
+            });
+            chipFavoriteBtn.addEventListener('mouseenter', () => showCustomTooltip(test.isFavorite ? 'Remove from favorites' : 'Add to favorites', chipFavoriteBtn));
+            chipFavoriteBtn.addEventListener('mouseleave', hideCustomTooltip);
+        }
+
+        chip.addEventListener('click', (e) => {
+            if (e.target.closest('.chip-favorite')) return;
             addTestToOrder(test.id);
             // Visual feedback
             chip.style.transform = 'scale(0.95)';
@@ -662,6 +698,10 @@ function renderDetailedCards(container, tests) {
             </span>
         ` : '';
 
+        const starFilled = test.isFavorite
+            ? '<path class="test-card-favorite-star-filled" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>'
+            : '<path class="test-card-favorite-star-outline" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>';
+
         card.innerHTML = `
             <div class="test-card-icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -683,6 +723,9 @@ function renderDetailedCards(container, tests) {
                     ${aliasesText ? `<span class="test-card-separator">•</span><span class="test-card-aliases">${aliasesText}</span>` : ''}
                 </div>
             </div>
+            <button type="button" class="test-card-favorite-btn" aria-label="${test.isFavorite ? 'Remove from favorites' : 'Add to favorites'}" data-test-id="${test.id}" title="${test.isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
+                <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${starFilled}</svg>
+            </button>
             <button type="button" class="test-card-add-btn" aria-label="Add to Order">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <path d="M8 3V13M3 8H13" stroke="#0066cc" stroke-width="2" stroke-linecap="round"/>
@@ -692,6 +735,7 @@ function renderDetailedCards(container, tests) {
 
         // Add click handler to entire card and button
         const addBtn = card.querySelector('.test-card-add-btn');
+        const favoriteBtn = card.querySelector('.test-card-favorite-btn');
         const cardClickHandler = () => {
             addTestToOrder(test.id);
             // Visual feedback
@@ -702,10 +746,8 @@ function renderDetailedCards(container, tests) {
         };
 
         card.addEventListener('click', (e) => {
-            // Don't trigger if clicking the add button (it has its own handler)
-            if (!e.target.closest('.test-card-add-btn')) {
-                cardClickHandler();
-            }
+            if (e.target.closest('.test-card-add-btn') || e.target.closest('.test-card-favorite-btn')) return;
+            cardClickHandler();
         });
 
         addBtn.addEventListener('click', (e) => {
@@ -715,6 +757,14 @@ function renderDetailedCards(container, tests) {
 
         addBtn.addEventListener('mouseenter', () => showCustomTooltip('Add to Order', addBtn));
         addBtn.addEventListener('mouseleave', hideCustomTooltip);
+
+        favoriteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFavorite(test.id);
+            renderQuickSelections();
+        });
+        favoriteBtn.addEventListener('mouseenter', () => showCustomTooltip(test.isFavorite ? 'Remove from favorites' : 'Add to favorites', favoriteBtn));
+        favoriteBtn.addEventListener('mouseleave', hideCustomTooltip);
 
         container.appendChild(card);
     });

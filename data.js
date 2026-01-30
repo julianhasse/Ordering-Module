@@ -416,9 +416,44 @@ function getTestById(id) {
     return LAB_TESTS.find(test => test.id === id);
 }
 
+const FAVORITES_STORAGE_KEY = 'labOrderingFavorites';
+
+function loadFavoritesFromStorage() {
+    try {
+        const saved = localStorage.getItem(FAVORITES_STORAGE_KEY);
+        if (saved) {
+            const ids = JSON.parse(saved);
+            if (Array.isArray(ids)) {
+                LAB_TESTS.forEach(test => {
+                    test.isFavorite = ids.includes(test.id);
+                });
+            }
+        }
+    } catch (e) {
+        console.warn('Could not load favorites from localStorage:', e);
+    }
+}
+
+function saveFavoritesToStorage() {
+    try {
+        const ids = LAB_TESTS.filter(test => test.isFavorite).map(test => test.id);
+        localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(ids));
+    } catch (e) {
+        console.warn('Could not save favorites to localStorage:', e);
+    }
+}
+
 // Function to get favorites (ready for API replacement)
 function getFavorites() {
     return LAB_TESTS.filter(test => test.isFavorite);
+}
+
+// Toggle favorite state for a test; persists to localStorage
+function toggleFavorite(testId) {
+    const test = LAB_TESTS.find(t => t.id === testId);
+    if (!test) return;
+    test.isFavorite = !test.isFavorite;
+    saveFavoritesToStorage();
 }
 
 // Function to get specialty panels (ready for API replacement)
@@ -430,3 +465,6 @@ function getSpecialtyPanels() {
 function getRecentOrders() {
     return RECENT_ORDERS.map(id => getTestById(id)).filter(Boolean);
 }
+
+// Apply persisted favorites on load
+loadFavoritesFromStorage();
