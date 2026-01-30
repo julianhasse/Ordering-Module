@@ -5,7 +5,7 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background-color: #f5f5f5;
     color: #333;
     line-height: 1.5;
@@ -84,7 +84,7 @@ body {
 }
 
 .account-input:focus {
-    border-color: #0066cc;
+    border-color: #3A5CE9;
     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
 }
 
@@ -122,7 +122,7 @@ body {
 }
 
 .account-dropdown-item:hover {
-    background-color: #f0f7ff;
+    background-color: #eef0fc;
 }
 
 .search-wrapper {
@@ -140,7 +140,7 @@ body {
 }
 
 .search-input:focus {
-    border-color: #0066cc;
+    border-color: #3A5CE9;
     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
 }
 
@@ -184,7 +184,7 @@ body {
 
 .combobox-item:hover,
 .combobox-item.highlighted {
-    background-color: #f0f7ff;
+    background-color: #eef0fc;
 }
 
 .combobox-item-name {
@@ -240,7 +240,7 @@ body {
 
 .diagnosis-combobox-item:hover,
 .diagnosis-combobox-item.highlighted {
-    background-color: #f0f7ff;
+    background-color: #eef0fc;
 }
 
 /* Zone 2: Quick Selections */
@@ -271,12 +271,12 @@ body {
 }
 
 .tab-button:hover {
-    color: #0066cc;
+    color: #3A5CE9;
 }
 
 .tab-button.active {
-    color: #0066cc;
-    border-bottom-color: #0066cc;
+    color: #3A5CE9;
+    border-bottom-color: #3A5CE9;
 }
 
 .view-toggle-container {
@@ -317,13 +317,13 @@ body {
 
 .segmented-button.active {
     background-color: #fff;
-    color: #0066cc;
+    color: #3A5CE9;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     font-weight: 600;
 }
 
 .segmented-button:focus {
-    outline: 2px solid #0066cc;
+    outline: 2px solid #3A5CE9;
     outline-offset: 2px;
 }
 
@@ -363,8 +363,8 @@ body {
 }
 
 .chip:hover {
-    border-color: #0066cc;
-    background-color: #f0f7ff;
+    border-color: #3A5CE9;
+    background-color: #eef0fc;
     transform: translateY(-2px);
     box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
 }
@@ -374,7 +374,7 @@ body {
 }
 
 .chip-icon {
-    color: #0066cc;
+    color: #3A5CE9;
     font-size: 18px;
     font-weight: bold;
 }
@@ -386,11 +386,11 @@ body {
     gap: 6px;
     padding: 4px 10px;
     background-color: #fff;
-    border: 1px solid #0066cc;
+    border: 1px solid #3A5CE9;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 500;
-    color: #0066cc;
+    color: #3A5CE9;
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -401,11 +401,11 @@ body {
     justify-content: center;
     width: 14px;
     height: 14px;
-    border: 1px solid #0066cc;
+    border: 1px solid #3A5CE9;
     border-radius: 50%;
     font-size: 10px;
     line-height: 1;
-    color: #0066cc;
+    color: #3A5CE9;
 }
 
 /* Compact checkmark-only chip for mini view */
@@ -416,11 +416,11 @@ body {
     width: 18px;
     height: 18px;
     background-color: #fff;
-    border: 1px solid #0066cc;
+    border: 1px solid #3A5CE9;
     border-radius: 50%;
     font-size: 11px;
     line-height: 1;
-    color: #0066cc;
+    color: #3A5CE9;
     flex-shrink: 0;
 }
 
@@ -454,7 +454,7 @@ body {
 
 .test-card:hover {
     background-color: #f0f0f0;
-    border-color: #0066cc;
+    border-color: #3A5CE9;
     box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
     transform: translateY(-1px);
 }
@@ -463,7 +463,7 @@ body {
     width: 48px;
     height: 48px;
     min-width: 48px;
-    background-color: #0066cc;
+    background-color: #3A5CE9;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -534,7 +534,7 @@ body {
 }
 
 .test-card-category {
-    color: #0066cc;
+    color: #3A5CE9;
     font-weight: 500;
 }
 
@@ -552,7 +552,7 @@ body {
     width: 36px;
     height: 36px;
     min-width: 36px;
-    background-color: #e6f2ff;
+    background-color: #e5e9fc;
     border: none;
     border-radius: 50%;
     display: flex;
@@ -564,7 +564,7 @@ body {
 }
 
 .test-card-add-btn:hover {
-    background-color: #0066cc;
+    background-color: #3A5CE9;
     transform: scale(1.1);
 }
 
@@ -612,7 +612,7 @@ body {
 
 .accordion-header[aria-expanded="true"] {
     background-color: #fff;
-    border-bottom-color: #0066cc;
+    border-bottom-color: #3A5CE9;
 }
 
 .accordion-title {
@@ -817,7 +817,7 @@ body {
 }
 
 .order-item-toggle:hover {
-    color: #0066cc;
+    color: #3A5CE9;
 }
 
 .order-item-toggle .accordion-icon {
@@ -869,9 +869,9 @@ body {
 }
 
 .order-item-edit:hover {
-    border-color: #0066cc;
-    color: #0066cc;
-    background-color: #f0f7ff;
+    border-color: #3A5CE9;
+    color: #3A5CE9;
+    background-color: #eef0fc;
 }
 
 .order-item-remove {
@@ -936,7 +936,7 @@ body {
 
 .add-to-all-link {
     font-size: 11px;
-    color: #0066cc;
+    color: #3A5CE9;
     text-decoration: none;
     font-weight: 500;
     cursor: pointer;
@@ -944,7 +944,7 @@ body {
 }
 
 .add-to-all-link:hover {
-    color: #0052a3;
+    color: #2D4BD4;
     text-decoration: underline;
 }
 
@@ -963,7 +963,7 @@ body {
 
 .order-field-input:focus,
 .order-field-select:focus {
-    border-color: #0066cc;
+    border-color: #3A5CE9;
     box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
 }
 
@@ -1007,13 +1007,13 @@ body {
 
 .fasting-segmented-btn.active {
     background-color: #fff;
-    color: #0066cc;
+    color: #3A5CE9;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     font-weight: 600;
 }
 
 .fasting-segmented-btn:focus {
-    outline: 2px solid #0066cc;
+    outline: 2px solid #3A5CE9;
     outline-offset: 2px;
 }
 
@@ -1027,7 +1027,7 @@ body {
 }
 
 .conflict-warning a {
-    color: #0066cc;
+    color: #3A5CE9;
     text-decoration: underline;
     cursor: pointer;
     margin-left: 8px;
@@ -1043,8 +1043,8 @@ body {
 .info-badge {
     display: inline-block;
     padding: 4px 8px;
-    background-color: #e8f4fd;
-    color: #0066cc;
+    background-color: #e5e9fc;
+    color: #3A5CE9;
     border-radius: 4px;
     font-size: 11px;
     font-weight: 500;
@@ -1101,15 +1101,15 @@ body {
 }
 
 .btn-order-details:hover {
-    border-color: #0066cc;
-    color: #0066cc;
-    background-color: #f0f7ff;
+    border-color: #3A5CE9;
+    color: #3A5CE9;
+    background-color: #eef0fc;
 }
 
 .cost-badge {
     display: inline-block;
     padding: 2px 8px;
-    background-color: #0066cc;
+    background-color: #3A5CE9;
     color: #fff;
     border-radius: 12px;
     font-size: 12px;
@@ -1141,7 +1141,7 @@ body {
 
 .btn-primary {
     padding: 12px 24px;
-    background-color: #0066cc;
+    background-color: #3A5CE9;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -1155,7 +1155,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #0052a3;
+    background-color: #2D4BD4;
     box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
 }
 
@@ -1205,7 +1205,7 @@ body {
     pointer-events: none;
     z-index: 10000;
     animation: flyToCart 0.6s ease-out forwards;
-    background-color: #0066cc;
+    background-color: #3A5CE9;
     color: white;
     padding: 8px 12px;
     border-radius: 6px;
@@ -1581,7 +1581,7 @@ body {
 
 .pick-list-card:hover {
     background-color: #f0f0f0;
-    border-color: #0066cc;
+    border-color: #3A5CE9;
     box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
     transform: translateY(-1px);
 }
@@ -1637,7 +1637,7 @@ body {
     width: 36px;
     height: 36px;
     min-width: 36px;
-    background-color: #e6f2ff;
+    background-color: #e5e9fc;
     border: none;
     border-radius: 50%;
     display: flex;
@@ -1649,7 +1649,7 @@ body {
 }
 
 .pick-list-add-btn:hover {
-    background-color: #0066cc;
+    background-color: #3A5CE9;
     transform: scale(1.1);
 }
 
@@ -1908,7 +1908,7 @@ body {
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-    border-color: #0066cc;
+    border-color: #3A5CE9;
     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
 }
 
@@ -1946,7 +1946,7 @@ body {
 }
 
 .diagnosis-code-input:focus {
-    border-color: #0066cc;
+    border-color: #3A5CE9;
     box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
 }
 
@@ -1987,9 +1987,9 @@ body {
 }
 
 .btn-add-diagnosis:hover {
-    border-color: #0066cc;
-    color: #0066cc;
-    background-color: #f0f7ff;
+    border-color: #3A5CE9;
+    color: #3A5CE9;
+    background-color: #eef0fc;
 }
 
 /* Sidebar scrollbar */
@@ -2027,7 +2027,7 @@ body {
     color: #333;
     margin-bottom: 16px;
     padding-bottom: 8px;
-    border-bottom: 2px solid #0066cc;
+    border-bottom: 2px solid #3A5CE9;
 }
 
 .form-row {
@@ -2101,7 +2101,7 @@ body {
 }
 
 .cost-row-total .cost-value {
-    color: #0066cc;
+    color: #3A5CE9;
     font-weight: 600;
 }
 
