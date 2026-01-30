@@ -446,31 +446,44 @@ function renderPanels() {
     const container = document.getElementById('panels-chips');
     if (!container) return;
 
-    // Get both specialty panels and pick lists
-    const panels = getSpecialtyPanels();
+    // Only show user-created pick lists
     const pickLists = getPickLists();
 
     // Clear container
     container.innerHTML = '';
 
-    // Check view mode
-    const activeButton = document.querySelector('.segmented-button.active');
-    const isDetailed = activeButton && activeButton.dataset.view === 'detailed';
-
-    // Render panels first
-    if (panels.length > 0) {
-        if (isDetailed) {
-            renderDetailedCards(container, panels);
-        } else {
-            renderMiniChips(container, panels);
-        }
+    // If no pick lists, show empty state message
+    if (pickLists.length === 0) {
+        const emptyMsg = document.createElement('p');
+        emptyMsg.className = 'pick-lists-empty-message';
+        emptyMsg.textContent = 'No pick lists created';
+        container.appendChild(emptyMsg);
+        return;
     }
 
-    // Then render pick lists
+    // Check view mode and set grid layout (single column in Full Details to prevent overflow)
+    const activeButton = document.querySelector('.segmented-button.active');
+    const isDetailed = activeButton && activeButton.dataset.view === 'detailed';
+    if (isDetailed) {
+        container.classList.add('detailed-view');
+    } else {
+        container.classList.remove('detailed-view');
+    }
+
+    // Render pick lists only
     pickLists.forEach(pickList => {
         const pickListCard = document.createElement('div');
         pickListCard.className = isDetailed ? 'pick-list-card' : 'chip';
         pickListCard.dataset.pickListId = pickList.id;
+
+        // Build acronyms for tests in this pick list (same style as test count)
+        const acronyms = pickList.testIds
+            .map(id => getTestById(id))
+            .filter(Boolean)
+            .map(test => getTestAcronym(test));
+        const countText = acronyms.length > 0
+            ? `${pickList.testIds.length} tests (${acronyms.join(', ')})`
+            : `${pickList.testIds.length} tests`;
 
         if (isDetailed) {
             pickListCard.innerHTML = `
@@ -483,7 +496,7 @@ function renderPanels() {
                 <div class="pick-list-content">
                     <div class="pick-list-header">
                         <span class="pick-list-name">${pickList.name}</span>
-                        <span class="pick-list-count">${pickList.testIds.length} tests</span>
+                        <span class="pick-list-count">${countText}</span>
                     </div>
                 </div>
                 <div class="pick-list-actions">
@@ -1954,7 +1967,7 @@ function saveOrderDetails() {
     if (saveBtn) {
         const originalText = saveBtn.textContent;
         saveBtn.textContent = 'Saved!';
-        saveBtn.style.backgroundColor = '#28a745';
+        saveBtn.style.backgroundColor = '#3D9B3D';
 
         setTimeout(() => {
             saveBtn.textContent = originalText;

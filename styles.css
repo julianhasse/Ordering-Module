@@ -1404,7 +1404,7 @@ body {
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: #28a745;
+    background-color: #3D9B3D;
     color: #fff;
     font-size: 16px;
     font-weight: 700;
@@ -1441,7 +1441,7 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: #28a745;
+    background-color: #3D9B3D;
     color: #fff;
     padding: 16px 20px;
     border-radius: 8px;
@@ -1566,6 +1566,14 @@ body {
     flex-shrink: 0;
 }
 
+/* Pick Lists empty state */
+.pick-lists-empty-message {
+    color: #666;
+    font-size: 15px;
+    margin: 0;
+    padding: 16px 0;
+}
+
 /* Pick List Cards */
 .pick-list-card {
     display: flex;
@@ -1590,7 +1598,7 @@ body {
     width: 48px;
     height: 48px;
     min-width: 48px;
-    background-color: #28a745;
+    background-color: #3D9B3D;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1623,6 +1631,9 @@ body {
     font-weight: 600;
     color: #333;
     line-height: 1.3;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pick-list-count {
