@@ -1608,6 +1608,12 @@ function openEditSidebar(orderId) {
     // Populate diagnosis codes
     renderDiagnosisCodes(orderItem.diagnosisCodes || (orderItem.icd10 ? [orderItem.icd10] : []));
 
+    // Clear upload documents list and file input when opening
+    const fileInput = document.getElementById('edit-supporting-documents');
+    const docsList = document.getElementById('edit-supporting-documents-list');
+    if (fileInput) fileInput.value = '';
+    if (docsList) docsList.innerHTML = '';
+
     // Show sidebar
     sidebar.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1664,6 +1670,22 @@ function setupSidebarListeners() {
     newSaveBtn.addEventListener('click', () => {
         saveEditSidebar();
     });
+
+    // Upload Supporting Documents: trigger button opens file picker
+    const uploadTrigger = document.getElementById('edit-upload-docs-trigger');
+    const supportingDocsInput = document.getElementById('edit-supporting-documents');
+    const supportingDocsList = document.getElementById('edit-supporting-documents-list');
+    if (uploadTrigger && supportingDocsInput) {
+        uploadTrigger.addEventListener('click', () => supportingDocsInput.click());
+    }
+    if (supportingDocsInput && supportingDocsList) {
+        supportingDocsInput.addEventListener('change', () => {
+            const files = Array.from(supportingDocsInput.files || []);
+            supportingDocsList.innerHTML = files.length === 0
+                ? ''
+                : files.map(f => `<div class="edit-doc-item">${(f.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`).join('');
+        });
+    }
 
     // Handle diagnosis code removal
     document.querySelectorAll('.diagnosis-code-remove').forEach(btn => {
@@ -1758,9 +1780,10 @@ function saveEditSidebar() {
 // Order details state
 let orderDetailsData = {
     patient: {
+        firstName: 'Olga',
+        lastName: 'Simpson',
         name: 'Simpson, Olga',
         dob: '1978-12-16',
-        mrn: '',
         gender: 'female',
         address: '742 Evergreen Terrace',
         city: 'Springfield',
@@ -1790,7 +1813,10 @@ let orderDetailsData = {
         location: '',
         notes: '',
         urgent: false,
-        billMethod: 'patient'
+        billMethod: 'patient',
+        hospitalStatus: 'non-hospital',
+        workmansComp: 'no',
+        ehrControlNumber: ''
     },
     guarantor: {
         addGuarantor: false,
@@ -1817,7 +1843,8 @@ function initializeOrderDetailsAccordion() {
             if (saved) {
                 const savedData = JSON.parse(saved);
                 // If saved data has empty patient name, clear it to use new defaults
-                if (!savedData.patient || !savedData.patient.name || savedData.patient.name.trim() === '') {
+                const p = savedData.patient;
+                if (!p || ((!p.firstName || p.firstName.trim() === '') && (!p.lastName || p.lastName.trim() === '') && (!p.name || p.name.trim() === ''))) {
                     localStorage.removeItem('orderDetailsData');
                 }
             }
@@ -1897,9 +1924,11 @@ function setupOrderDetailsListeners() {
 
 function populateOrderDetailsForm() {
     // Patient Demographics
-    document.getElementById('patient-name').value = orderDetailsData.patient.name || '';
+    const firstNameEl = document.getElementById('patient-first-name');
+    const lastNameEl = document.getElementById('patient-last-name');
+    if (firstNameEl) firstNameEl.value = orderDetailsData.patient.firstName || '';
+    if (lastNameEl) lastNameEl.value = orderDetailsData.patient.lastName || '';
     document.getElementById('patient-dob').value = orderDetailsData.patient.dob || '';
-    document.getElementById('patient-mrn').value = orderDetailsData.patient.mrn || '';
     document.getElementById('patient-gender').value = orderDetailsData.patient.gender || '';
     document.getElementById('patient-address').value = orderDetailsData.patient.address || '';
     document.getElementById('patient-city').value = orderDetailsData.patient.city || '';
@@ -1950,9 +1979,22 @@ function populateOrderDetailsForm() {
     document.getElementById('insurance-secondary').value = orderDetailsData.insurance.secondary || '';
 
     // Order Information
-    document.getElementById('order-date').value = orderDetailsData.order.date || new Date().toISOString().split('T')[0];
-    document.getElementById('order-time').value = orderDetailsData.order.time || new Date().toTimeString().slice(0, 5);
-    document.getElementById('order-location').value = orderDetailsData.order.location || '';
+    const orderDateEl = document.getElementById('order-date');
+    if (orderDateEl) orderDateEl.value = orderDetailsData.order.date || new Date().toISOString().split('T')[0];
+    const collectionDtEl = document.getElementById('order-collection-datetime');
+    if (collectionDtEl) {
+        const d = orderDetailsData.order.date || new Date().toISOString().split('T')[0];
+        const t = orderDetailsData.order.time || new Date().toTimeString().slice(0, 5);
+        collectionDtEl.value = d + 'T' + t;
+    }
+    const orderLocationEl = document.getElementById('order-location');
+    if (orderLocationEl) orderLocationEl.value = orderDetailsData.order.location || '';
+    const hospitalStatusEl = document.getElementById('order-hospital-status');
+    if (hospitalStatusEl) hospitalStatusEl.value = orderDetailsData.order.hospitalStatus || 'non-hospital';
+    const workmansCompEl = document.getElementById('order-workmans-comp');
+    if (workmansCompEl) workmansCompEl.value = orderDetailsData.order.workmansComp || 'no';
+    const ehrControlNumberEl = document.getElementById('order-ehr-control-number');
+    if (ehrControlNumberEl) ehrControlNumberEl.value = orderDetailsData.order.ehrControlNumber || '';
     document.getElementById('order-notes').value = orderDetailsData.order.notes || '';
 
     // Bill Method
@@ -1964,9 +2006,12 @@ function populateOrderDetailsForm() {
 
 function saveOrderDetails() {
     // Collect form data
-    orderDetailsData.patient.name = document.getElementById('patient-name').value;
+    const firstNameEl = document.getElementById('patient-first-name');
+    const lastNameEl = document.getElementById('patient-last-name');
+    orderDetailsData.patient.firstName = firstNameEl ? firstNameEl.value : '';
+    orderDetailsData.patient.lastName = lastNameEl ? lastNameEl.value : '';
+    orderDetailsData.patient.name = [orderDetailsData.patient.lastName, orderDetailsData.patient.firstName].filter(Boolean).join(', ') || '';
     orderDetailsData.patient.dob = document.getElementById('patient-dob').value;
-    orderDetailsData.patient.mrn = document.getElementById('patient-mrn').value;
     orderDetailsData.patient.gender = document.getElementById('patient-gender').value;
     orderDetailsData.patient.address = document.getElementById('patient-address').value;
     orderDetailsData.patient.city = document.getElementById('patient-city').value;
@@ -1999,9 +2044,24 @@ function saveOrderDetails() {
     orderDetailsData.insurance.relationship = document.getElementById('insurance-relationship').value;
     orderDetailsData.insurance.secondary = document.getElementById('insurance-secondary').value;
 
-    orderDetailsData.order.date = document.getElementById('order-date').value;
-    orderDetailsData.order.time = document.getElementById('order-time').value;
-    orderDetailsData.order.location = document.getElementById('order-location').value;
+    const orderDateEl = document.getElementById('order-date');
+    const collectionDtEl = document.getElementById('order-collection-datetime');
+    if (orderDateEl && orderDateEl.value) {
+        orderDetailsData.order.date = orderDateEl.value;
+    }
+    if (collectionDtEl && collectionDtEl.value) {
+        const v = collectionDtEl.value;
+        orderDetailsData.order.date = v.slice(0, 10);
+        orderDetailsData.order.time = v.slice(11, 16);
+    }
+    const orderLocationEl = document.getElementById('order-location');
+    orderDetailsData.order.location = orderLocationEl ? orderLocationEl.value : '';
+    const hospitalStatusEl = document.getElementById('order-hospital-status');
+    orderDetailsData.order.hospitalStatus = hospitalStatusEl ? hospitalStatusEl.value : 'non-hospital';
+    const workmansCompEl = document.getElementById('order-workmans-comp');
+    orderDetailsData.order.workmansComp = workmansCompEl ? workmansCompEl.value : 'no';
+    const ehrControlNumberEl = document.getElementById('order-ehr-control-number');
+    orderDetailsData.order.ehrControlNumber = ehrControlNumberEl ? ehrControlNumberEl.value : '';
     orderDetailsData.order.notes = document.getElementById('order-notes').value;
 
     const billMethodEl = document.getElementById('bill-method');
@@ -2041,10 +2101,20 @@ function loadOrderDetailsData() {
             const savedData = JSON.parse(saved);
             // Only merge if there's actual saved data with patient name
             // If saved data has empty patient name, use our defaults instead
-            if (savedData.patient && savedData.patient.name && savedData.patient.name.trim() !== '') {
+            const p = savedData.patient;
+            const hasPatientName = p && (p.name && p.name.trim() !== '' || p.firstName && p.firstName.trim() !== '' || p.lastName && p.lastName.trim() !== '');
+            if (hasPatientName) {
                 // Deep merge to preserve defaults for fields not in saved data
+                const merged = { ...savedData.patient };
+                if (merged.name && (!merged.firstName || !merged.lastName)) {
+                    const parts = merged.name.split(',').map(s => s.trim());
+                    if (parts.length >= 2) {
+                        merged.lastName = merged.lastName || parts[0];
+                        merged.firstName = merged.firstName || parts[1];
+                    }
+                }
                 orderDetailsData = {
-                    patient: { ...orderDetailsData.patient, ...savedData.patient },
+                    patient: { ...orderDetailsData.patient, ...merged },
                     provider: { ...orderDetailsData.provider, ...savedData.provider },
                     insurance: { ...orderDetailsData.insurance, ...savedData.insurance },
                     order: { ...orderDetailsData.order, ...savedData.order }

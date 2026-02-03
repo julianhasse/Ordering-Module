@@ -113,20 +113,20 @@
                                 <h3 class="section-title">Patient Information</h3>
                                 <div class="form-row">
                                     <div class="form-group form-group-half">
-                                        <label for="patient-name">Full Name</label>
-                                        <input type="text" id="patient-name" class="form-input"
-                                            placeholder="Last, First">
+                                        <label for="patient-first-name">First Name</label>
+                                        <input type="text" id="patient-first-name" class="form-input"
+                                            placeholder="First Name">
                                     </div>
                                     <div class="form-group form-group-half">
-                                        <label for="patient-dob">Date of Birth</label>
-                                        <input type="date" id="patient-dob" class="form-input">
+                                        <label for="patient-last-name">Last Name</label>
+                                        <input type="text" id="patient-last-name" class="form-input"
+                                            placeholder="Last Name">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group form-group-half">
-                                        <label for="patient-mrn">MRN</label>
-                                        <input type="text" id="patient-mrn" class="form-input"
-                                            placeholder="Medical Record Number">
+                                        <label for="patient-dob">Date of Birth</label>
+                                        <input type="date" id="patient-dob" class="form-input">
                                     </div>
                                     <div class="form-group form-group-half">
                                         <label for="patient-gender">Gender</label>
@@ -316,20 +316,33 @@
                             <!-- Order Information -->
                             <div class="form-section">
                                 <h3 class="section-title">Order Information</h3>
-                                <div class="form-row">
-                                    <div class="form-group form-group-half">
-                                        <label for="order-date">Order Date</label>
-                                        <input type="date" id="order-date" class="form-input">
-                                    </div>
-                                    <div class="form-group form-group-half">
-                                        <label for="order-time">Order Time</label>
-                                        <input type="time" id="order-time" class="form-input">
-                                    </div>
+                                <div class="form-group">
+                                    <label for="order-date">Order Date</label>
+                                    <input type="date" id="order-date" class="form-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="order-location">Order Location</label>
-                                    <input type="text" id="order-location" class="form-input"
-                                        placeholder="Clinic/Hospital Name">
+                                    <label for="order-collection-datetime">Collection Date/Time</label>
+                                    <input type="datetime-local" id="order-collection-datetime" class="form-input"
+                                        aria-label="Collection date and time">
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-hospital-status">Hospital Status</label>
+                                    <select id="order-hospital-status" class="form-select">
+                                        <option value="non-hospital" selected>Non-Hospital Patient</option>
+                                        <option value="inpatient">Inpatient</option>
+                                        <option value="outpatient">Outpatient</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-workmans-comp">Workman's Comp</label>
+                                    <select id="order-workmans-comp" class="form-select">
+                                        <option value="no" selected>No</option>
+                                        <option value="yes">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="order-ehr-control-number">EHR Control Number (Optional)</label>
+                                    <input type="text" id="order-ehr-control-number" class="form-input" placeholder="">
                                 </div>
                                 <div class="form-group">
                                     <label for="order-notes">Order Notes</label>
@@ -403,20 +416,20 @@
                                 <h3 class="section-title">Patient Information</h3>
                                 <div class="form-row">
                                     <div class="form-group form-group-half">
-                                        <label for="patient-name">Full Name</label>
-                                        <input type="text" id="patient-name" class="form-input"
-                                            placeholder="Last, First">
+                                        <label for="patient-first-name">First Name</label>
+                                        <input type="text" id="patient-first-name" class="form-input"
+                                            placeholder="First Name">
                                     </div>
                                     <div class="form-group form-group-half">
-                                        <label for="patient-dob">Date of Birth</label>
-                                        <input type="date" id="patient-dob" class="form-input">
+                                        <label for="patient-last-name">Last Name</label>
+                                        <input type="text" id="patient-last-name" class="form-input"
+                                            placeholder="Last Name">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group form-group-half">
-                                        <label for="patient-mrn">MRN</label>
-                                        <input type="text" id="patient-mrn" class="form-input"
-                                            placeholder="Medical Record Number">
+                                        <label for="patient-dob">Date of Birth</label>
+                                        <input type="date" id="patient-dob" class="form-input">
                                     </div>
                                     <div class="form-group form-group-half">
                                         <label for="patient-gender">Gender</label>
@@ -527,20 +540,14 @@
                             <!-- Order Information -->
                             <div class="form-section">
                                 <h3 class="section-title">Order Information</h3>
-                                <div class="form-row">
-                                    <div class="form-group form-group-half">
-                                        <label for="order-date">Order Date</label>
-                                        <input type="date" id="order-date" class="form-input">
-                                    </div>
-                                    <div class="form-group form-group-half">
-                                        <label for="order-time">Order Time</label>
-                                        <input type="time" id="order-time" class="form-input">
-                                    </div>
+                                <div class="form-group">
+                                    <label for="order-date">Order Date</label>
+                                    <input type="date" id="order-date" class="form-input">
                                 </div>
                                 <div class="form-group">
-                                    <label for="order-location">Order Location</label>
-                                    <input type="text" id="order-location" class="form-input"
-                                        placeholder="Clinic/Hospital Name">
+                                    <label for="order-collection-datetime">Collection Date/Time</label>
+                                    <input type="datetime-local" id="order-collection-datetime" class="form-input"
+                                        aria-label="Collection date and time">
                                 </div>
                                 <div class="form-group">
                                     <label for="order-notes">Order Notes</label>
@@ -634,6 +641,22 @@
                                 <label for="edit-special-instructions">Special Instructions</label>
                                 <textarea id="edit-special-instructions" class="form-textarea" rows="2"
                                     placeholder="Any special instructions or notes..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Upload Supporting Documents</label>
+                                <div class="edit-upload-docs">
+                                    <input type="file" id="edit-supporting-documents"
+                                        class="edit-supporting-documents-input" multiple
+                                        accept=".pdf,.doc,.docx,image/*" aria-label="Upload supporting documents">
+                                    <button type="button" class="edit-upload-docs-trigger" id="edit-upload-docs-trigger"
+                                        aria-label="Add supporting documents">
+                                        <span class="edit-upload-docs-icon">+</span>
+                                        <span class="edit-upload-docs-text">Add files</span>
+                                    </button>
+                                    <div id="edit-supporting-documents-list" class="edit-supporting-documents-list"
+                                        aria-live="polite"></div>
+                                </div>
                             </div>
 
                             <div class="form-group">
