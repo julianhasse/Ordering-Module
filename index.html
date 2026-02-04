@@ -325,22 +325,12 @@
                                     <input type="datetime-local" id="order-collection-datetime" class="form-input"
                                         aria-label="Collection date and time">
                                 </div>
-                                <div class="form-row">
-                                    <div class="form-group form-group-half">
-                                        <label for="order-hospital-status">Hospital Status</label>
-                                        <select id="order-hospital-status" class="form-select">
-                                            <option value="non-hospital" selected>Non-Hospital Patient</option>
-                                            <option value="inpatient">Inpatient</option>
-                                            <option value="outpatient">Outpatient</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group form-group-half">
-                                        <label for="order-workmans-comp">Workman's Comp</label>
-                                        <select id="order-workmans-comp" class="form-select">
-                                            <option value="no" selected>No</option>
-                                            <option value="yes">Yes</option>
-                                        </select>
-                                    </div>
+                                <div class="form-group">
+                                    <label for="order-workmans-comp">Workman's Comp</label>
+                                    <select id="order-workmans-comp" class="form-select">
+                                        <option value="no" selected>No</option>
+                                        <option value="yes">Yes</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <label for="order-ehr-control-number">EHR Control Number (Optional)</label>
@@ -626,7 +616,82 @@
                                 <h4 class="form-subheader">Ask on Order Entry (AOEs)</h4>
                             </div>
 
-                            <div class="form-group">
+                            <!-- OmniSeq INSIGHT specific AOEs (shown only for this test) -->
+                            <div id="omniseq-aoes-section" class="omniseq-aoes-section" style="display: none;">
+                                <div class="form-group">
+                                    <label for="edit-omniseq-hospital-status">Hospital Status</label>
+                                    <select id="edit-omniseq-hospital-status" class="form-select">
+                                        <option value="non-hospital" selected>Non-Hospital Patient</option>
+                                        <option value="inpatient">Inpatient</option>
+                                        <option value="outpatient">Outpatient</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-specimen">Specimen Source</label>
+                                    <select id="edit-omniseq-specimen" class="form-select">
+                                        <option value="">N/A</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-treating-physician">Is the treating physician the same as the ordering physician? *</label>
+                                    <select id="edit-omniseq-treating-physician" class="form-select">
+                                        <option value="">Select...</option>
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-sample-collection-site">Sample Collection Date/Time (date procured from patient) *</label>
+                                    <select id="edit-omniseq-sample-collection-site" class="form-select">
+                                        <option value="">Select...</option>
+                                        <option value="lung-left">Lung-left</option>
+                                        <option value="lung-right">Lung Right</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-clinical-info">Clinical Information to support necessity</label>
+                                    <input type="text" id="edit-omniseq-clinical-info" class="form-input" maxlength="70" placeholder="Up to 70 characters">
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-tumor-type">What is the tumor type? *</label>
+                                    <select id="edit-omniseq-tumor-type" class="form-select">
+                                        <option value="">Select...</option>
+                                        <option value="lung-large-cell">Lung - Large Cell</option>
+                                        <option value="lung-small-cell">Lung - Small Cell</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-submitting-specimen">Are you submitting the specimen? *</label>
+                                    <select id="edit-omniseq-submitting-specimen" class="form-select">
+                                        <option value="">Select...</option>
+                                        <option value="yes">Yes</option>
+                                        <option value="no">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-specimen-id">What is the specimen ID? *</label>
+                                    <input type="text" id="edit-omniseq-specimen-id" class="form-input" maxlength="50" placeholder="00000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-specimen-type">What is the specimen type? *</label>
+                                    <select id="edit-omniseq-specimen-type" class="form-select">
+                                        <option value="paraffin-block" selected>Paraffin Block</option>
+                                        <option value="formalin-fixed">Formalin Fixed</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="edit-omniseq-block-quantity">What should we test if the block quantity is greater than one? *</label>
+                                    <select id="edit-omniseq-block-quantity" class="form-select">
+                                        <option value="test-best-block" selected>Test the best block</option>
+                                        <option value="test-all-blocks">Test all blocks</option>
+                                    </select>
+                                </div>
+                                <div class="form-group omniseq-disclaimer">
+                                    <p class="omniseq-disclaimer-text">Disclaimer: OmniSeq® INSIGHT is orderable through Labcorp Oncology. For more information please visit oncology.labcorp.com/cancer-care-team/test-menu/omniseq-insight. Note: When submitting a sample, the pathology report, primary tumor type and state of disease are required.</p>
+                                </div>
+                            </div>
+
+                            <div id="edit-specimen-group" class="form-group">
                                 <label for="edit-specimen">Specimen Source</label>
                                 <select id="edit-specimen" class="form-select">
                                     <option value="">N/A</option>

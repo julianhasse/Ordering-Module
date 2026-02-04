@@ -2016,6 +2016,26 @@ body {
     border-bottom: 1px solid #e0e0e0;
 }
 
+/* OmniSeq INSIGHT specific AOEs (Edit sidebar) */
+.omniseq-aoes-section {
+    margin-bottom: 16px;
+}
+
+.omniseq-disclaimer {
+    margin-top: 8px;
+}
+
+.omniseq-disclaimer-text {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid #3A5CE9;
+}
+
 /* Upload Supporting Documents (Edit sidebar) */
 .edit-upload-docs {
     display: flex;

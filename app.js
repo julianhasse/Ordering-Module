@@ -1614,6 +1614,41 @@ function openEditSidebar(orderId) {
     if (fileInput) fileInput.value = '';
     if (docsList) docsList.innerHTML = '';
 
+    // OmniSeq INSIGHT: show/hide and populate specific AOE section
+    const omniseqSection = document.getElementById('omniseq-aoes-section');
+    const specimenGroup = document.getElementById('edit-specimen-group');
+    const isOmniSeq = test.id === 'omniseq-insight-001';
+    if (omniseqSection) omniseqSection.style.display = isOmniSeq ? 'block' : 'none';
+    if (specimenGroup) specimenGroup.style.display = isOmniSeq ? 'none' : 'block';
+    if (isOmniSeq) {
+        const o = orderItem.omniseqAoes || {};
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        set('edit-omniseq-hospital-status', o.hospitalStatus || 'non-hospital');
+        set('edit-omniseq-specimen', orderItem.specimen || '');
+        set('edit-omniseq-treating-physician', o.treatingPhysicianSame);
+        set('edit-omniseq-sample-collection-site', o.sampleCollectionSite);
+        set('edit-omniseq-clinical-info', o.clinicalInfo);
+        set('edit-omniseq-tumor-type', o.tumorType);
+        set('edit-omniseq-submitting-specimen', o.submittingSpecimen);
+        set('edit-omniseq-specimen-id', o.specimenId);
+        set('edit-omniseq-specimen-type', o.specimenType || 'paraffin-block');
+        set('edit-omniseq-block-quantity', o.blockQuantity || 'test-best-block');
+        // Populate OmniSeq specimen dropdown (same options as main specimen when test has specimen options)
+        const omniseqSpecimenEl = document.getElementById('edit-omniseq-specimen');
+        if (omniseqSpecimenEl) {
+            omniseqSpecimenEl.innerHTML = '<option value="">N/A</option>';
+            if (test.requiresSpecimen && test.specimenOptions && test.specimenOptions.length) {
+                test.specimenOptions.forEach(opt => {
+                    const optionEl = document.createElement('option');
+                    optionEl.value = opt;
+                    optionEl.textContent = opt;
+                    if (orderItem.specimen === opt) optionEl.selected = true;
+                    omniseqSpecimenEl.appendChild(optionEl);
+                });
+            }
+        }
+    }
+
     // Show sidebar
     sidebar.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1758,6 +1793,24 @@ function saveEditSidebar() {
     // Keep backward compatibility with icd10 field
     orderItem.icd10 = diagnosisCodes[0] || '';
 
+    // OmniSeq INSIGHT: save specific AOE fields
+    const test = orderItem.test;
+    if (test && test.id === 'omniseq-insight-001') {
+        const get = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
+        orderItem.specimen = get('edit-omniseq-specimen') || '';
+        orderItem.omniseqAoes = {
+            hospitalStatus: get('edit-omniseq-hospital-status') || 'non-hospital',
+            treatingPhysicianSame: get('edit-omniseq-treating-physician'),
+            sampleCollectionSite: get('edit-omniseq-sample-collection-site'),
+            clinicalInfo: get('edit-omniseq-clinical-info'),
+            tumorType: get('edit-omniseq-tumor-type'),
+            submittingSpecimen: get('edit-omniseq-submitting-specimen'),
+            specimenId: get('edit-omniseq-specimen-id'),
+            specimenType: get('edit-omniseq-specimen-type') || 'paraffin-block',
+            blockQuantity: get('edit-omniseq-block-quantity') || 'test-best-block'
+        };
+    }
+
     // Update priority if it changed
     if (orderItem.priority !== selectedPriority) {
         // If this was the only item, update global priority
@@ -1814,7 +1867,6 @@ let orderDetailsData = {
         notes: '',
         urgent: false,
         billMethod: 'patient',
-        hospitalStatus: 'non-hospital',
         workmansComp: 'no',
         ehrControlNumber: ''
     },
@@ -1989,8 +2041,6 @@ function populateOrderDetailsForm() {
     }
     const orderLocationEl = document.getElementById('order-location');
     if (orderLocationEl) orderLocationEl.value = orderDetailsData.order.location || '';
-    const hospitalStatusEl = document.getElementById('order-hospital-status');
-    if (hospitalStatusEl) hospitalStatusEl.value = orderDetailsData.order.hospitalStatus || 'non-hospital';
     const workmansCompEl = document.getElementById('order-workmans-comp');
     if (workmansCompEl) workmansCompEl.value = orderDetailsData.order.workmansComp || 'no';
     const ehrControlNumberEl = document.getElementById('order-ehr-control-number');
@@ -2056,8 +2106,6 @@ function saveOrderDetails() {
     }
     const orderLocationEl = document.getElementById('order-location');
     orderDetailsData.order.location = orderLocationEl ? orderLocationEl.value : '';
-    const hospitalStatusEl = document.getElementById('order-hospital-status');
-    orderDetailsData.order.hospitalStatus = hospitalStatusEl ? hospitalStatusEl.value : 'non-hospital';
     const workmansCompEl = document.getElementById('order-workmans-comp');
     orderDetailsData.order.workmansComp = workmansCompEl ? workmansCompEl.value : 'no';
     const ehrControlNumberEl = document.getElementById('order-ehr-control-number');

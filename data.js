@@ -321,6 +321,19 @@ const LAB_TESTS = [
         isPanel: false,
         panelTests: [],
         estimatedCost: 45.00
+    },
+    {
+        id: 'omniseq-insight-001',
+        name: 'OmniSeq® INSIGHT',
+        cptCode: '81459',
+        aliases: ['OmniSeq INSIGHT', 'OmniSeq', 'INSIGHT'],
+        requiresSpecimen: false,
+        specimenOptions: [],
+        category: 'Molecular',
+        isFavorite: true,
+        isPanel: false,
+        panelTests: [],
+        estimatedCost: null
     }
 ];
 
