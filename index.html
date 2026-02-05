@@ -616,16 +616,17 @@
                                 <h4 class="form-subheader">Ask on Order Entry (AOEs)</h4>
                             </div>
 
+                            <div class="form-group">
+                                <label for="edit-patient-status">Patient Status</label>
+                                <select id="edit-patient-status" class="form-select">
+                                    <option value="non-hospital">Non-Hospital Patient</option>
+                                    <option value="inpatient">Inpatient</option>
+                                    <option value="outpatient" selected>Outpatient</option>
+                                </select>
+                            </div>
+
                             <!-- OmniSeq INSIGHT specific AOEs (shown only for this test) -->
                             <div id="omniseq-aoes-section" class="omniseq-aoes-section" style="display: none;">
-                                <div class="form-group">
-                                    <label for="edit-omniseq-hospital-status">Hospital Status</label>
-                                    <select id="edit-omniseq-hospital-status" class="form-select">
-                                        <option value="non-hospital" selected>Non-Hospital Patient</option>
-                                        <option value="inpatient">Inpatient</option>
-                                        <option value="outpatient">Outpatient</option>
-                                    </select>
-                                </div>
                                 <div class="form-group">
                                     <label for="edit-omniseq-specimen">Specimen Source</label>
                                     <select id="edit-omniseq-specimen" class="form-select">

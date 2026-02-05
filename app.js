@@ -1589,6 +1589,8 @@ function openEditSidebar(orderId) {
     document.getElementById('edit-frequency').value = orderItem.frequency || 'once';
     document.getElementById('edit-start-date').value = orderItem.startDate || '';
     document.getElementById('edit-end-date').value = orderItem.endDate || '';
+    const patientStatusEl = document.getElementById('edit-patient-status');
+    if (patientStatusEl) patientStatusEl.value = orderItem.patientStatus || 'outpatient';
 
     // Populate specimen dropdown
     const specimenSelect = document.getElementById('edit-specimen');
@@ -1623,7 +1625,6 @@ function openEditSidebar(orderId) {
     if (isOmniSeq) {
         const o = orderItem.omniseqAoes || {};
         const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
-        set('edit-omniseq-hospital-status', o.hospitalStatus || 'non-hospital');
         set('edit-omniseq-specimen', orderItem.specimen || '');
         set('edit-omniseq-treating-physician', o.treatingPhysicianSame);
         set('edit-omniseq-sample-collection-site', o.sampleCollectionSite);
@@ -1782,6 +1783,8 @@ function saveEditSidebar() {
     orderItem.frequency = document.getElementById('edit-frequency').value;
     orderItem.startDate = document.getElementById('edit-start-date').value;
     orderItem.endDate = document.getElementById('edit-end-date').value;
+    const patientStatusEl = document.getElementById('edit-patient-status');
+    orderItem.patientStatus = patientStatusEl ? patientStatusEl.value : 'outpatient';
 
     // Collect diagnosis codes
     const diagnosisInputs = document.querySelectorAll('.diagnosis-code-input');
@@ -1799,7 +1802,6 @@ function saveEditSidebar() {
         const get = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
         orderItem.specimen = get('edit-omniseq-specimen') || '';
         orderItem.omniseqAoes = {
-            hospitalStatus: get('edit-omniseq-hospital-status') || 'non-hospital',
             treatingPhysicianSame: get('edit-omniseq-treating-physician'),
             sampleCollectionSite: get('edit-omniseq-sample-collection-site'),
             clinicalInfo: get('edit-omniseq-clinical-info'),
