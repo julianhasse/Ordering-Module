@@ -740,18 +740,35 @@ body {
     gap: 6px;
     margin-left: 12px;
     padding: 4px 10px;
-    background-color: #fff9e6;
+    background-color: #ffebee;
     border-radius: 4px;
     font-size: 12px;
-    color: #856404;
+    color: #c62828;
 }
 
 .npi-warning-icon {
     font-size: 14px;
+    color: #c62828;
 }
 
 .npi-warning-text {
     font-weight: 500;
+    color: #c62828;
+}
+
+.npi-warning {
+    cursor: pointer;
+}
+
+/* NPI field error state (red stroke for awareness) */
+.form-input.npi-field-error {
+    border: 2px solid #c62828;
+    outline: none;
+}
+
+.form-input.npi-field-error:focus {
+    border-color: #c62828;
+    box-shadow: 0 0 0 1px #c62828;
 }
 
 .accordion-icon {
@@ -985,6 +1002,29 @@ body {
     border-color: #3A5CE9;
     color: #3A5CE9;
     background-color: #eef0fc;
+}
+
+/* OmniSeq card: red three-dots and warning icon until sidebar is opened */
+.order-item-edit.order-item-edit-required {
+    color: #c62828;
+    border-color: #c62828;
+}
+
+.order-item-edit.order-item-edit-required:hover {
+    color: #c62828;
+    border-color: #c62828;
+    background-color: #ffebee;
+}
+
+.order-item-omniseq-warning {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 4px;
+}
+
+.order-item-omniseq-warning .order-item-warning-icon {
+    color: #c62828;
+    font-size: 14px;
 }
 
 .order-item-remove {
@@ -2019,6 +2059,23 @@ body {
 /* OmniSeq INSIGHT specific AOEs (Edit sidebar) */
 .omniseq-aoes-section {
     margin-bottom: 16px;
+}
+
+/* OmniSeq required fields: red labels (including asterisk) and red stroke on controls */
+.omniseq-aoes-section .omniseq-required-field label {
+    color: #c62828;
+}
+
+.omniseq-aoes-section .omniseq-required-field .form-input,
+.omniseq-aoes-section .omniseq-required-field .form-select {
+    border: 2px solid #c62828;
+}
+
+.omniseq-aoes-section .omniseq-required-field .form-input:focus,
+.omniseq-aoes-section .omniseq-required-field .form-select:focus {
+    border-color: #c62828;
+    outline: none;
+    box-shadow: 0 0 0 1px #c62828;
 }
 
 .omniseq-disclaimer {

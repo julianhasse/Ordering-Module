@@ -938,12 +938,19 @@ function renderOrderList() {
         orderItem.setAttribute('role', 'listitem');
 
         const test = item.test;
+        const isOmniSeq = test.id === 'omniseq-insight-001';
+        const showOmniSeqRequiredHint = isOmniSeq && !item.omniseqSidebarOpened;
+        const editBtnClass = showOmniSeqRequiredHint ? 'order-item-edit order-item-edit-required' : 'order-item-edit';
+        const omniseqWarningHtml = showOmniSeqRequiredHint
+            ? '<span class="order-item-omniseq-warning" aria-label="Required fields"><span class="order-item-warning-icon">⚠</span></span>'
+            : '';
 
         orderItem.innerHTML = `
             <div class="order-item-header">
                 <div class="order-item-name">${test.name}</div>
                 <div class="order-item-actions">
-                    <button class="order-item-edit" data-order-id="${item.id}" aria-label="Edit additional details" title="More Options">⋯</button>
+                    ${omniseqWarningHtml}
+                    <button class="${editBtnClass}" data-order-id="${item.id}" aria-label="Edit additional details" title="More Options">⋯</button>
                     <button class="order-item-remove" aria-label="Remove test" title="Remove">×</button>
                     <button type="button" class="order-item-toggle" aria-expanded="true" aria-label="Collapse test details">
                         <span class="accordion-icon">▼</span>
@@ -960,7 +967,7 @@ function renderOrderList() {
                         <input 
                             type="text" 
                             class="order-field-input" 
-                            placeholder="E11.9"
+                            placeholder="Enter Diagnosis Code"
                             value="${item.icd10 || ''}"
                             data-order-id="${item.id}"
                             data-field="icd10"
@@ -1576,6 +1583,10 @@ function openEditSidebar(orderId) {
     currentEditingOrderId = orderId;
     const sidebar = document.getElementById('edit-sidebar');
     const test = orderItem.test;
+    if (test && test.id === 'omniseq-insight-001') {
+        orderItem.omniseqSidebarOpened = true;
+        renderOrderList();
+    }
 
     // Update sidebar title
     document.getElementById('sidebar-title').textContent = `Edit: ${test.name}`;
@@ -1754,7 +1765,7 @@ function addDiagnosisCodeInput(value = '') {
         <input 
             type="text" 
             class="diagnosis-code-input" 
-            placeholder="E11.9"
+            placeholder="Enter Diagnosis Code"
             value="${value}"
             aria-label="Diagnosis code"
         >
@@ -1916,13 +1927,26 @@ function initializeOrderDetailsAccordion() {
         updateCostSummary();
 
         // Setup accordion toggle
-        accordionToggle.addEventListener('click', () => {
+        const npiWarning = document.getElementById('npi-warning');
+        accordionToggle.addEventListener('click', (e) => {
             const isExpanded = accordionToggle.getAttribute('aria-expanded') === 'true';
+            if (npiWarning && npiWarning.style.display !== 'none' && npiWarning.contains(e.target)) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isExpanded) {
+                    accordionToggle.setAttribute('aria-expanded', 'true');
+                    accordionContent.classList.add('expanded');
+                }
+                const npiInput = document.querySelector('#order-details-accordion-content #provider-npi') || document.getElementById('provider-npi');
+                if (npiInput) {
+                    npiInput.classList.add('npi-field-error');
+                    npiInput.focus();
+                }
+                return;
+            }
             accordionToggle.setAttribute('aria-expanded', !isExpanded);
-
             if (!isExpanded) {
                 accordionContent.classList.add('expanded');
-                // Hide NPI warning when accordion is expanded
                 hideNPIWarning();
             } else {
                 accordionContent.classList.remove('expanded');
@@ -1937,6 +1961,12 @@ function initializeOrderDetailsAccordion() {
             });
             form.addEventListener('change', () => {
                 saveOrderDetailsData();
+            });
+        }
+        const npiInputForError = document.querySelector('#order-details-accordion-content #provider-npi') || document.getElementById('provider-npi');
+        if (npiInputForError) {
+            npiInputForError.addEventListener('input', () => {
+                npiInputForError.classList.remove('npi-field-error');
             });
         }
 
@@ -2214,5 +2244,9 @@ function hideNPIWarning() {
     const npiWarning = document.getElementById('npi-warning');
     if (npiWarning) {
         npiWarning.style.display = 'none';
+    }
+    const npiInput = document.querySelector('#order-details-accordion-content #provider-npi') || document.getElementById('provider-npi');
+    if (npiInput) {
+        npiInput.classList.remove('npi-field-error');
     }
 }
