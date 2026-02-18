@@ -58,6 +58,7 @@
                             <div id="account-dropdown" class="account-dropdown" role="listbox"
                                 aria-label="Account numbers">
                                 <div class="account-dropdown-item" data-account="12764098">12764098</div>
+                                <div class="account-dropdown-item" data-account="12764077">12764077</div>
                             </div>
                         </div>
                     </div>
@@ -79,13 +80,7 @@
                         <button class="tab-button" data-tab="panels">Pick Lists</button>
                         <button class="tab-button" data-tab="recent">Recent Orders</button>
                     </div>
-                    <div class="view-toggle-container">
-                        <div class="segmented-button-group">
-                            <button type="button" class="segmented-button" data-view="compact">Compact View</button>
-                            <button type="button" class="segmented-button active" data-view="detailed">Full
-                                Details</button>
-                        </div>
-                    </div>
+                    <!-- View toggle (Compact / Full Details) removed for now; backend supports re-adding via .view-toggle-container + .segmented-button-group -->
                     <div class="chips-container">
                         <div id="favorites-chips" class="chips-grid active-tab-content"></div>
                         <div id="panels-chips" class="chips-grid"></div>
@@ -596,14 +591,6 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="edit-priority">Priority</label>
-                                <select id="edit-priority" class="form-select">
-                                    <option value="routine">Routine</option>
-                                    <option value="stat">STAT</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
                                 <label>Diagnosis Codes (ICD-10)</label>
                                 <div id="diagnosis-codes-container" class="diagnosis-codes-container">
                                     <!-- Diagnosis codes will be added here -->
@@ -700,15 +687,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="edit-clinical-indication">Clinical Indication</label>
+                                <label for="edit-clinical-indication">Clinical Comments</label>
                                 <textarea id="edit-clinical-indication" class="form-textarea" rows="3"
-                                    placeholder="Enter clinical indication for this test..."></textarea>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="edit-special-instructions">Special Instructions</label>
-                                <textarea id="edit-special-instructions" class="form-textarea" rows="2"
-                                    placeholder="Any special instructions or notes..."></textarea>
+                                    placeholder="Enter clinical comments for this test..."></textarea>
                             </div>
 
                             <div class="form-group">

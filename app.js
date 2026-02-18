@@ -478,9 +478,9 @@ function renderPanels() {
         return;
     }
 
-    // Check view mode and set grid layout (single column in Full Details to prevent overflow)
+    // Check view mode and set grid layout (single column in Full Details to prevent overflow). Default to detailed when toggle is not present.
     const activeButton = document.querySelector('.segmented-button.active');
-    const isDetailed = activeButton && activeButton.dataset.view === 'detailed';
+    const isDetailed = !activeButton || activeButton.dataset.view === 'detailed';
     if (isDetailed) {
         container.classList.add('detailed-view');
     } else {
@@ -602,9 +602,9 @@ function renderRecent() {
 function renderChips(container, tests) {
     container.innerHTML = '';
 
-    // Check view mode from active segmented button
+    // Check view mode from active segmented button. Default to detailed when toggle is not present.
     const activeButton = document.querySelector('.segmented-button.active');
-    const isDetailed = activeButton && activeButton.dataset.view === 'detailed';
+    const isDetailed = !activeButton || activeButton.dataset.view === 'detailed';
 
     if (isDetailed) {
         renderDetailedCards(container, tests);
@@ -996,15 +996,15 @@ function renderOrderList() {
                 </div>
                 <div class="order-item-row">
                     <div class="order-item-field order-item-field-full">
-                        <label class="field-label">Special Instructions</label>
+                        <label class="field-label">Clinical Comments</label>
                         <input 
                             type="text" 
                             class="order-field-input" 
-                            placeholder="Enter special instructions..."
+                            placeholder="Enter clinical comments..."
                             value="${item.clinicalIndication || ''}"
                             data-order-id="${item.id}"
                             data-field="clinicalIndication"
-                            aria-label="Special instructions for ${test.name}"
+                            aria-label="Clinical comments for ${test.name}"
                         >
                     </div>
                 </div>
@@ -1594,9 +1594,7 @@ function openEditSidebar(orderId) {
     // Populate form fields
     document.getElementById('edit-test-name').value = test.name;
     document.getElementById('edit-cpt-code').value = test.cptCode;
-    document.getElementById('edit-priority').value = orderItem.priority;
     document.getElementById('edit-clinical-indication').value = orderItem.clinicalIndication || '';
-    document.getElementById('edit-special-instructions').value = orderItem.specialInstructions || '';
     document.getElementById('edit-frequency').value = orderItem.frequency || 'once';
     document.getElementById('edit-start-date').value = orderItem.startDate || '';
     document.getElementById('edit-end-date').value = orderItem.endDate || '';
@@ -1787,10 +1785,8 @@ function saveEditSidebar() {
     if (!orderItem) return;
 
     // Collect form data
-    orderItem.priority = document.getElementById('edit-priority').value;
     orderItem.specimen = document.getElementById('edit-specimen').value || '';
     orderItem.clinicalIndication = document.getElementById('edit-clinical-indication').value;
-    orderItem.specialInstructions = document.getElementById('edit-special-instructions').value;
     orderItem.frequency = document.getElementById('edit-frequency').value;
     orderItem.startDate = document.getElementById('edit-start-date').value;
     orderItem.endDate = document.getElementById('edit-end-date').value;
@@ -1822,16 +1818,6 @@ function saveEditSidebar() {
             specimenType: get('edit-omniseq-specimen-type') || 'paraffin-block',
             blockQuantity: get('edit-omniseq-block-quantity') || 'test-best-block'
         };
-    }
-
-    // Update priority if it changed
-    if (orderItem.priority !== selectedPriority) {
-        // If this was the only item, update global priority
-        const allSamePriority = currentOrder.every(item => item.priority === orderItem.priority);
-        if (allSamePriority) {
-            selectedPriority = orderItem.priority;
-            document.querySelector(`input[name="priority"][value="${orderItem.priority}"]`).checked = true;
-        }
     }
 
     // Re-render order list to reflect changes
