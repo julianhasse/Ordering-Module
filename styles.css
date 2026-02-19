@@ -1541,6 +1541,32 @@ body {
     min-width: 0;
 }
 
+/* Order Summary: align labels and values with grid (same as Past Order Summary) */
+#review-body .review-details {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 4px 16px;
+    align-items: start;
+}
+
+#review-body .review-details .review-detail-row {
+    display: contents;
+}
+
+#review-body .review-details .review-label {
+    padding: 4px 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+}
+
+#review-body .review-details .review-value {
+    padding: 4px 0;
+    font-size: 13px;
+    color: #333;
+    min-width: 0;
+}
+
 .review-test-item {
     padding: 8px 10px;
     background-color: #f8f9fa;
