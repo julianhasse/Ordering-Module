@@ -1061,20 +1061,20 @@ function renderOrderList() {
             </div>
             <div class="order-item-details">
                 <div class="order-item-row">
-                    <div class="order-item-field">
+                    <div class="order-item-field order-item-field-diagnosis">
                         <div class="field-label-row">
                             <label class="field-label">Diagnosis code</label>
-                            ${item.icd10 ? `<a href="#" class="add-to-all-link" data-order-id="${item.id}" data-field="icd10">Add to all</a>` : ''}
+                            ${((item.diagnosisCodes && item.diagnosisCodes.length) || item.icd10) ? `<a href="#" class="add-to-all-link" data-order-id="${item.id}" data-field="diagnosisCodes">Add to all</a>` : ''}
                         </div>
-                        <input 
-                            type="text" 
-                            class="order-field-input" 
-                            placeholder="Enter Diagnosis Code"
-                            value="${item.icd10 || ''}"
-                            data-order-id="${item.id}"
-                            data-field="icd10"
-                            aria-label="Diagnosis code for ${test.name}"
-                        >
+                        <div class="diagnosis-code-tags-wrap" data-order-id="${item.id}">
+                            <div class="diagnosis-code-pills">
+                                ${(() => {
+                                    const codes = item.diagnosisCodes && item.diagnosisCodes.length ? item.diagnosisCodes.slice(0, 10) : (item.icd10 ? [item.icd10] : []);
+                                    return codes.map((code, idx) => `<span class="diagnosis-code-pill" data-order-id="${item.id}" data-index="${idx}">${(code || '').replace(/</g, '&lt;')}<button type="button" class="diagnosis-code-pill-remove" aria-label="Remove">×</button></span>`).join('');
+                                })()}
+                            </div>
+                            <input type="text" class="order-field-input diagnosis-code-input" placeholder="${(item.diagnosisCodes && item.diagnosisCodes.length) || item.icd10 ? '' : 'Enter Diagnosis Code'}" data-order-id="${item.id}" aria-label="Diagnosis code for ${test.name}" ${(item.diagnosisCodes && item.diagnosisCodes.length >= 10) ? 'disabled' : ''}>
+                        </div>
                     </div>
                     ${test.requiresSpecimen ? `
                         <div class="order-item-field">
@@ -1087,12 +1087,11 @@ function renderOrderList() {
                             </select>
                         </div>
                     ` : ''}
-                    <div class="order-item-field">
+                    <div class="order-item-field order-item-field-fasting">
                         <label class="field-label">Fasting</label>
                         <div class="fasting-segmented-group" data-order-id="${item.id}">
-                            <button type="button" class="fasting-segmented-btn ${item.fasting === 'yes' || item.fasting === 'na' ? '' : 'active'}" data-value="no" aria-label="Fasting: No">No</button>
+                            <button type="button" class="fasting-segmented-btn ${item.fasting !== 'yes' ? 'active' : ''}" data-value="no" aria-label="Fasting: No">No</button>
                             <button type="button" class="fasting-segmented-btn ${item.fasting === 'yes' ? 'active' : ''}" data-value="yes" aria-label="Fasting: Yes">Yes</button>
-                            <button type="button" class="fasting-segmented-btn ${item.fasting === 'na' ? 'active' : ''}" data-value="na" aria-label="Fasting: N/A">N/A</button>
                         </div>
                     </div>
                 </div>
@@ -1146,35 +1145,67 @@ function renderOrderList() {
         // Inline field inputs - handle all editable fields
         const fieldInputs = orderItem.querySelectorAll('.order-field-input, .order-field-select');
         fieldInputs.forEach(input => {
+            if (input.classList.contains('diagnosis-code-input')) return;
             const fieldName = input.dataset.field;
+            if (!fieldName) return;
 
             if (input.tagName === 'INPUT') {
                 input.addEventListener('input', (e) => {
                     item[fieldName] = e.target.value;
-                    // Update diagnosis codes if ICD-10 changes
-                    if (fieldName === 'icd10') {
-                        if (!item.diagnosisCodes) {
-                            item.diagnosisCodes = [];
-                        }
-                        if (e.target.value && !item.diagnosisCodes.includes(e.target.value)) {
-                            item.diagnosisCodes = [e.target.value];
-                        } else if (!e.target.value) {
-                            item.diagnosisCodes = [];
-                        }
-                        showDiagnosisCombobox(input);
-                    }
                 });
-                // Diagnosis code (ICD-10) combobox: show on focus/input, hide on blur
-                if (fieldName === 'icd10') {
-                    input.addEventListener('focus', () => showDiagnosisCombobox(input));
-                    input.addEventListener('blur', () => setTimeout(hideDiagnosisCombobox, 200));
-                }
             } else if (input.tagName === 'SELECT') {
                 input.addEventListener('change', (e) => {
                     item[fieldName] = e.target.value;
                 });
             }
         });
+
+        // Diagnosis code tags: add pill on Enter/Tab/blur, combobox, remove pill on ×
+        const diagnosisTagsWrap = orderItem.querySelector('.diagnosis-code-tags-wrap');
+        const diagnosisInput = orderItem.querySelector('.diagnosis-code-input');
+        if (diagnosisTagsWrap && diagnosisInput) {
+            function addPillFromInput() {
+                const val = diagnosisInput.value.trim();
+                if (!val) return;
+                if (!item.diagnosisCodes) item.diagnosisCodes = [];
+                if (item.diagnosisCodes.length >= 10 || item.diagnosisCodes.includes(val)) {
+                    diagnosisInput.value = '';
+                    return;
+                }
+                item.diagnosisCodes.push(val);
+                item.diagnosisCodes = item.diagnosisCodes.slice(0, 10);
+                item.icd10 = item.diagnosisCodes[0] || '';
+                diagnosisInput.value = '';
+                renderOrderList();
+            }
+            diagnosisInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addPillFromInput();
+                } else if (e.key === 'Tab') {
+                    addPillFromInput();
+                }
+            });
+            diagnosisInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    addPillFromInput();
+                    hideDiagnosisCombobox();
+                }, 200);
+            });
+            diagnosisInput.addEventListener('focus', () => showDiagnosisCombobox(diagnosisInput));
+            diagnosisInput.addEventListener('input', () => showDiagnosisCombobox(diagnosisInput));
+            orderItem.querySelectorAll('.diagnosis-code-pill-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const pill = e.target.closest('.diagnosis-code-pill');
+                    const idx = parseInt(pill.dataset.index, 10);
+                    if (!item.diagnosisCodes) item.diagnosisCodes = [];
+                    item.diagnosisCodes.splice(idx, 1);
+                    item.icd10 = item.diagnosisCodes[0] || '';
+                    renderOrderList();
+                });
+            });
+        }
 
         // Handle fasting segmented buttons
         const fastingGroup = orderItem.querySelector('.fasting-segmented-group');
@@ -1192,63 +1223,22 @@ function renderOrderList() {
             });
         }
 
-        // Handle "Add to all" link for ICD-10
+        // Handle "Add to all" link for diagnosis codes (copies full array)
         const addToAllLink = orderItem.querySelector('.add-to-all-link');
         if (addToAllLink) {
             addToAllLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                const sourceValue = item.icd10;
-                if (sourceValue) {
-                    // Propagate to all other order items
+                const codes = (item.diagnosisCodes && item.diagnosisCodes.length)
+                    ? [...item.diagnosisCodes]
+                    : (item.icd10 ? [item.icd10] : []);
+                if (codes.length > 0) {
                     currentOrder.forEach(o => {
                         if (o.id !== item.id) {
-                            o.icd10 = sourceValue;
-                            if (!o.diagnosisCodes) o.diagnosisCodes = [];
-                            if (sourceValue && !o.diagnosisCodes.includes(sourceValue)) {
-                                o.diagnosisCodes = [sourceValue];
-                            }
+                            o.diagnosisCodes = [...codes];
+                            o.icd10 = codes[0] || '';
                         }
                     });
                     renderOrderList();
-                }
-            });
-        }
-
-        // Show/hide "Add to all" link based on input value
-        const icd10Input = orderItem.querySelector('.order-field-input[data-field="icd10"]');
-        if (icd10Input) {
-            icd10Input.addEventListener('input', (e) => {
-                item.icd10 = e.target.value;
-                const addToAllLink = orderItem.querySelector('.add-to-all-link');
-                const fieldLabelRow = orderItem.querySelector('.field-label-row');
-                if (fieldLabelRow) {
-                    if (e.target.value.trim() && !addToAllLink) {
-                        const link = document.createElement('a');
-                        link.href = '#';
-                        link.className = 'add-to-all-link';
-                        link.dataset.orderId = item.id;
-                        link.dataset.field = 'icd10';
-                        link.textContent = 'Add to all';
-                        link.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            const sourceValue = item.icd10;
-                            if (sourceValue) {
-                                currentOrder.forEach(o => {
-                                    if (o.id !== item.id) {
-                                        o.icd10 = sourceValue;
-                                        if (!o.diagnosisCodes) o.diagnosisCodes = [];
-                                        if (sourceValue && !o.diagnosisCodes.includes(sourceValue)) {
-                                            o.diagnosisCodes = [sourceValue];
-                                        }
-                                    }
-                                });
-                                renderOrderList();
-                            }
-                        });
-                        fieldLabelRow.appendChild(link);
-                    } else if (!e.target.value.trim() && addToAllLink) {
-                        addToAllLink.remove();
-                    }
                 }
             });
         }
