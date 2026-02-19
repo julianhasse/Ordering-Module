@@ -1515,12 +1515,12 @@ body {
     border-color: #ddd;
 }
 
-/* Past Order Summary: align labels and values with grid */
+/* Past Order Summary: align labels and values with grid, baseline-aligned */
 #past-order-summary-body .review-details {
     display: grid;
     grid-template-columns: 160px 1fr;
     gap: 4px 16px;
-    align-items: start;
+    align-items: baseline;
 }
 
 #past-order-summary-body .review-details .review-detail-row {
@@ -1531,40 +1531,49 @@ body {
     padding: 4px 0;
     font-size: 13px;
     font-weight: 500;
+    line-height: 1.4;
     color: #666;
 }
 
 #past-order-summary-body .review-details .review-value {
     padding: 4px 0;
     font-size: 13px;
+    line-height: 1.4;
     color: #333;
     min-width: 0;
 }
 
-/* Order Summary: align labels and values with grid (same as Past Order Summary) */
-#review-body .review-details {
+/* Order Summary: align labels and values with grid, baseline-aligned */
+#review-sidebar #review-body .review-details {
     display: grid;
     grid-template-columns: 160px 1fr;
     gap: 4px 16px;
-    align-items: start;
+    align-items: baseline;
 }
 
-#review-body .review-details .review-detail-row {
+#review-sidebar #review-body .review-details .review-detail-row {
     display: contents;
 }
 
-#review-body .review-details .review-label {
+#review-sidebar #review-body .review-details .review-label {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
     padding: 4px 0;
     font-size: 13px;
     font-weight: 500;
+    line-height: 1.4;
     color: #666;
+    box-sizing: border-box;
 }
 
-#review-body .review-details .review-value {
+#review-sidebar #review-body .review-details .review-value {
     padding: 4px 0;
     font-size: 13px;
+    line-height: 1.4;
     color: #333;
     min-width: 0;
+    overflow-wrap: break-word;
 }
 
 .review-test-item {
