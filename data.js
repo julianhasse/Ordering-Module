@@ -337,13 +337,13 @@ const LAB_TESTS = [
     }
 ];
 
-// Mock recent orders (last 5 tests ordered)
-const RECENT_ORDERS = [
-    'cbc-001',
-    'cmp-001',
-    'tsh-001',
-    'lipid-001',
-    'glucose-001'
+// Past orders (ready for API replacement) – list of { orderNumber, orderDate (YYYY-MM-DD) }
+const PAST_ORDERS = [
+    { orderNumber: 'ORD-10482', orderDate: '2025-01-22' },
+    { orderNumber: 'ORD-10481', orderDate: '2025-01-21' },
+    { orderNumber: 'ORD-10480', orderDate: '2025-01-20' },
+    { orderNumber: 'ORD-10479', orderDate: '2025-01-18' },
+    { orderNumber: 'ORD-10478', orderDate: '2025-01-15' }
 ];
 
 // Pick Lists (saved bundles of tests)
@@ -486,9 +486,9 @@ function getSpecialtyPanels() {
     return LAB_TESTS.filter(test => test.isPanel);
 }
 
-// Function to get recent orders (ready for API replacement)
-function getRecentOrders() {
-    return RECENT_ORDERS.map(id => getTestById(id)).filter(Boolean);
+// Function to get past orders (ready for API replacement)
+function getPastOrders() {
+    return PAST_ORDERS.slice();
 }
 
 // Apply persisted favorites on load

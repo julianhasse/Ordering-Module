@@ -1559,8 +1559,18 @@ body {
     border-radius: 50%;
     background-color: #3D9B3D;
     color: #fff;
-    font-size: 16px;
-    font-weight: 700;
+}
+
+#past-order-summary-sidebar .past-order-summary-header-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+}
+
+#past-order-summary-sidebar .past-order-summary-header-icon svg {
+    width: 18px;
+    height: 18px;
 }
 
 /* Compact two-line test cards in review */
@@ -1965,6 +1975,95 @@ body {
 .pick-list-delete-btn-small:hover {
     color: #cc0000;
     background-color: #ffe6e6;
+}
+
+/* Past Order Cards */
+.past-order-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s;
+}
+
+.past-order-card:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.past-order-card-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.past-order-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    background-color: #555;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.past-order-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.past-order-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.past-order-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.past-order-number {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.past-order-date {
+    font-size: 13px;
+    color: #666;
+}
+
+.past-order-download {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.past-order-download:hover {
+    border-color: #3A5CE9;
+    color: #3A5CE9;
+    background-color: #eef0fc;
 }
 
 /* Order Details Sidebar (Left) */

@@ -45,6 +45,34 @@
                 </div>
             </div>
 
+            <!-- Past Order Summary Sidebar (Left) -->
+            <div id="past-order-summary-sidebar" class="review-sidebar">
+                <div class="sidebar-overlay"></div>
+                <div class="sidebar-content sidebar-content-left-review">
+                    <div class="sidebar-header">
+                        <h2>
+                            <span class="review-header-title">
+                                <span class="past-order-summary-header-icon" aria-hidden="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                        <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                                <span>Past Order Summary</span>
+                            </span>
+                        </h2>
+                        <button id="past-order-summary-close" class="sidebar-close" aria-label="Close">×</button>
+                    </div>
+                    <div class="sidebar-body" id="past-order-summary-body">
+                        <!-- Past order content populated here -->
+                    </div>
+                    <div class="sidebar-footer">
+                        <button type="button" id="past-order-summary-cancel" class="btn-ghost">Cancel</button>
+                        <button type="button" id="past-order-summary-open-pdf" class="btn-primary">Open PDF</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Left Pane: Search & Discovery (60%) -->
             <div class="left-pane">
                 <!-- Zone 1: Omni-Search Header -->
@@ -78,7 +106,7 @@
                     <div class="tabs">
                         <button class="tab-button active" data-tab="favorites">Favorites</button>
                         <button class="tab-button" data-tab="panels">Pick Lists</button>
-                        <button class="tab-button" data-tab="recent">Recent Orders</button>
+                        <button class="tab-button" data-tab="recent">Past Orders</button>
                     </div>
                     <!-- View toggle (Compact / Full Details) removed for now; backend supports re-adding via .view-toggle-container + .segmented-button-group -->
                     <div class="chips-container">

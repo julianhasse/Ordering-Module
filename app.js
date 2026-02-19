@@ -639,10 +639,66 @@ function renderPanels() {
     });
 }
 
+function formatOrderDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${mm}/${dd}/${yyyy}`;
+}
+
 function renderRecent() {
     const container = document.getElementById('recent-chips');
-    const recent = getRecentOrders();
-    renderChips(container, recent);
+    if (!container) return;
+    container.innerHTML = '';
+    container.classList.add('detailed-view');
+    const pastOrders = getPastOrders();
+    if (pastOrders.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'pick-lists-empty-message';
+        empty.textContent = 'No past orders';
+        container.appendChild(empty);
+        return;
+    }
+    pastOrders.forEach((order) => {
+        const card = document.createElement('div');
+        card.className = 'past-order-card';
+        card.innerHTML = `
+            <div class="past-order-card-main">
+                <div class="past-order-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z" fill="white"/>
+                        <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H13V17H7V15Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="past-order-content">
+                    <div class="past-order-header">
+                        <span class="past-order-number">Order #${(order.orderNumber || '').replace(/^ORD-/, '')}</span>
+                        <span class="past-order-date">${formatOrderDate(order.orderDate)}</span>
+                    </div>
+                </div>
+                <button type="button" class="past-order-download" aria-label="Download summary PDF" data-order-number="${order.orderNumber}" title="Download summary PDF">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+        const downloadBtn = card.querySelector('.past-order-download');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openPastOrderSummarySidebar(order);
+            });
+            downloadBtn.addEventListener('mouseenter', () => showCustomTooltip('Download summary PDF', downloadBtn));
+            downloadBtn.addEventListener('mouseleave', hideCustomTooltip);
+        }
+        container.appendChild(card);
+    });
 }
 
 function renderChips(container, tests) {
@@ -1342,6 +1398,160 @@ function closeReviewSidebar() {
         sidebar.classList.remove('open');
         document.body.style.overflow = '';
     }
+}
+
+function openPastOrderSummarySidebar(order) {
+    const sidebar = document.getElementById('past-order-summary-sidebar');
+    if (!sidebar) return;
+    populatePastOrderSummaryContent(order);
+    sidebar.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setupPastOrderSummaryListeners();
+}
+
+function closePastOrderSummarySidebar() {
+    const sidebar = document.getElementById('past-order-summary-sidebar');
+    if (sidebar) {
+        sidebar.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+}
+
+function setupPastOrderSummaryListeners() {
+    const closeBtn = document.getElementById('past-order-summary-close');
+    const cancelBtn = document.getElementById('past-order-summary-cancel');
+    const openPdfBtn = document.getElementById('past-order-summary-open-pdf');
+    const sidebar = document.getElementById('past-order-summary-sidebar');
+    const overlay = sidebar ? sidebar.querySelector('.sidebar-overlay') : null;
+    const closeHandler = () => closePastOrderSummarySidebar();
+
+    if (closeBtn) {
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+        newCloseBtn.addEventListener('click', closeHandler);
+    }
+    if (cancelBtn) {
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        newCancelBtn.addEventListener('click', closeHandler);
+    }
+    if (overlay) overlay.addEventListener('click', closeHandler);
+    if (openPdfBtn) {
+        const newOpenPdfBtn = openPdfBtn.cloneNode(true);
+        openPdfBtn.parentNode.replaceChild(newOpenPdfBtn, openPdfBtn);
+        newOpenPdfBtn.addEventListener('click', () => {
+            closePastOrderSummarySidebar();
+            showSuccessNotification('PDF opened successfully.');
+        });
+    }
+}
+
+function populatePastOrderSummaryContent(order) {
+    const body = document.getElementById('past-order-summary-body');
+    if (!body) return;
+    loadOrderDetailsData();
+    const orderNumberDisplay = (order && order.orderNumber) ? (order.orderNumber.replace(/^ORD-/, '') || order.orderNumber) : '—';
+    let html = '';
+
+    html += `
+        <div class="review-section">
+            <h3 class="review-section-title">Order Details</h3>
+            <div class="review-details">
+                <div class="review-detail-row">
+                    <span class="review-label">Order #:</span>
+                    <span class="review-value">${orderNumberDisplay}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Patient:</span>
+                    <span class="review-value">${orderDetailsData.patient.name || '—'}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">DOB:</span>
+                    <span class="review-value">${orderDetailsData.patient.dob ? formatDate(orderDetailsData.patient.dob) : '—'}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Provider:</span>
+                    <span class="review-value">${orderDetailsData.provider.name || '—'}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">NPI:</span>
+                    <span class="review-value">${orderDetailsData.provider.npi || '—'}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Account Number:</span>
+                    <span class="review-value">${accountInput && accountInput.value ? accountInput.value : '12764098'}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Collection Date/Time:</span>
+                    <span class="review-value">${(function() {
+                        const d = orderDetailsData.order.date;
+                        const t = orderDetailsData.order.time;
+                        if (!d) return '—';
+                        const dateStr = formatDate(d);
+                        if (t) return dateStr + ' ' + t;
+                        return dateStr;
+                    })()}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Clinical Notes:</span>
+                    <span class="review-value">${orderDetailsData.order.notes || 'No clinical notes for this order.'}</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    html += `
+        <div class="review-section">
+            <h3 class="review-section-title">Tests (${currentOrder.length})</h3>
+            <div class="review-tests">
+    `;
+    currentOrder.forEach((item) => {
+        const test = item.test;
+        const primaryDx = (item.diagnosisCodes && item.diagnosisCodes.length > 0) ? item.diagnosisCodes[0] : (item.icd10 || '');
+        const dxDescription = getIcd10Description(primaryDx);
+        html += `
+            <div class="review-test-item">
+                <div class="review-test-line-primary">
+                    <span class="review-test-name">${test.name}</span>
+                    <span class="review-test-code">${test.cptCode}</span>
+                </div>
+                <div class="review-test-line-secondary">
+                    <span class="review-test-dx-label">ICD-10</span>
+                    <span class="review-test-dx-value">${primaryDx || '—'}</span>${dxDescription ? ` <span class="review-test-dx-desc">${dxDescription}</span>` : ''}
+                </div>
+            </div>
+        `;
+    });
+    html += `
+            </div>
+        </div>
+    `;
+
+    const hasAOEs = currentOrder.some(item => item.specialInstructions || item.clinicalIndication);
+    if (hasAOEs) {
+        html += `
+            <div class="review-section">
+                <h3 class="review-section-title">AOEs</h3>
+                <div class="review-aoes">
+        `;
+        currentOrder.forEach((item) => {
+            if (item.specialInstructions || item.clinicalIndication) {
+                html += `
+                    <div class="review-aoes-item">
+                        <div class="review-detail-row">
+                            <span class="review-label">${item.test.name}:</span>
+                            <span class="review-value">${item.specialInstructions || item.clinicalIndication || ''}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        html += `
+                </div>
+            </div>
+        `;
+    }
+    body.innerHTML = html;
 }
 
 function setupReviewListeners() {
