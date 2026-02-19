@@ -1480,6 +1480,20 @@ function populatePastOrderSummaryContent(order) {
                     <span class="review-value">${accountInput && accountInput.value ? accountInput.value : '12764098'}</span>
                 </div>
                 <div class="review-detail-row">
+                    <span class="review-label">Bill Method:</span>
+                    <span class="review-value">${(function() {
+                        const v = orderDetailsData.order.billMethod || 'private-insurance';
+                        if (v === 'private-insurance') return 'Private Insurance';
+                        if (v === 'client') return 'Client';
+                        if (v === 'third-party') return 'Third Party';
+                        return v;
+                    })()}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Primary Insurance:</span>
+                    <span class="review-value">${orderDetailsData.insurance.primary || '—'}</span>
+                </div>
+                <div class="review-detail-row">
                     <span class="review-label">Collection Date/Time:</span>
                     <span class="review-value">${(function() {
                         const d = orderDetailsData.order.date;
@@ -1622,6 +1636,20 @@ function populateReviewContent() {
                 <div class="review-detail-row">
                     <span class="review-label">Account Number:</span>
                     <span class="review-value">${accountInput ? accountInput.value || '12764098' : '12764098'}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Bill Method:</span>
+                    <span class="review-value">${(function() {
+                        const v = orderDetailsData.order.billMethod || 'private-insurance';
+                        if (v === 'private-insurance') return 'Private Insurance';
+                        if (v === 'client') return 'Client';
+                        if (v === 'third-party') return 'Third Party';
+                        return v;
+                    })()}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Primary Insurance:</span>
+                    <span class="review-value">${orderDetailsData.insurance.primary || '—'}</span>
                 </div>
             </div>
         </div>
@@ -1840,7 +1868,6 @@ function openEditSidebar(orderId) {
     document.getElementById('edit-test-name').value = test.name;
     document.getElementById('edit-cpt-code').value = test.cptCode;
     document.getElementById('edit-clinical-indication').value = orderItem.clinicalIndication || '';
-    document.getElementById('edit-frequency').value = orderItem.frequency || 'once';
     document.getElementById('edit-start-date').value = orderItem.startDate || '';
     document.getElementById('edit-end-date').value = orderItem.endDate || '';
     const patientStatusEl = document.getElementById('edit-patient-status');
@@ -2046,7 +2073,6 @@ function saveEditSidebar() {
     // Collect form data
     orderItem.specimen = document.getElementById('edit-specimen').value || '';
     orderItem.clinicalIndication = document.getElementById('edit-clinical-indication').value;
-    orderItem.frequency = document.getElementById('edit-frequency').value;
     orderItem.startDate = document.getElementById('edit-start-date').value;
     orderItem.endDate = document.getElementById('edit-end-date').value;
     const patientStatusEl = document.getElementById('edit-patient-status');
