@@ -1580,11 +1580,10 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: #3D9B3D;
-    color: #fff;
+    color: #3D9B3D;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
 }
 
 #past-order-summary-sidebar .past-order-summary-header-icon {
