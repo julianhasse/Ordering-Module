@@ -1066,13 +1066,14 @@ function renderOrderList() {
                             <label class="field-label">Diagnosis code</label>
                             ${((item.diagnosisCodes && item.diagnosisCodes.length) || item.icd10) ? `<a href="#" class="add-to-all-link" data-order-id="${item.id}" data-field="diagnosisCodes">Add to all</a>` : ''}
                         </div>
-                        <div class="diagnosis-code-tags-wrap" data-order-id="${item.id}">
+                        <div class="diagnosis-code-tags-wrap ${(() => { const c = item.diagnosisCodes && item.diagnosisCodes.length ? item.diagnosisCodes : (item.icd10 ? [item.icd10] : []); return c.length <= 3 ? 'diagnosis-code-tags-nowrap' : ''; })()}" data-order-id="${item.id}">
                             <div class="diagnosis-code-pills">
                                 ${(() => {
                                     const codes = item.diagnosisCodes && item.diagnosisCodes.length ? item.diagnosisCodes.slice(0, 10) : (item.icd10 ? [item.icd10] : []);
                                     return codes.map((code, idx) => `<span class="diagnosis-code-pill" data-order-id="${item.id}" data-index="${idx}">${(code || '').replace(/</g, '&lt;')}<button type="button" class="diagnosis-code-pill-remove" aria-label="Remove">×</button></span>`).join('');
                                 })()}
                             </div>
+                            ${(item.diagnosisCodes && item.diagnosisCodes.length >= 10) ? '' : '<button type="button" class="diagnosis-code-add-btn" aria-label="Add diagnosis code">+</button>'}
                             <input type="text" class="order-field-input diagnosis-code-input" placeholder="${(item.diagnosisCodes && item.diagnosisCodes.length) || item.icd10 ? '' : 'Enter Diagnosis Code'}" data-order-id="${item.id}" aria-label="Diagnosis code for ${test.name}" ${(item.diagnosisCodes && item.diagnosisCodes.length >= 10) ? 'disabled' : ''}>
                         </div>
                     </div>
@@ -1205,6 +1206,13 @@ function renderOrderList() {
                     renderOrderList();
                 });
             });
+            const addBtn = orderItem.querySelector('.diagnosis-code-add-btn');
+            if (addBtn) {
+                addBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    diagnosisInput.focus();
+                });
+            }
         }
 
         // Handle fasting segmented buttons
@@ -2010,9 +2018,23 @@ function addDiagnosisCodeInput(value = '') {
     const removeBtn = codeItem.querySelector('.diagnosis-code-remove');
     removeBtn.addEventListener('click', () => {
         codeItem.remove();
+        syncDiagnosisCodesFromSidebarToOrder();
     });
 
     container.appendChild(codeItem);
+}
+
+function syncDiagnosisCodesFromSidebarToOrder() {
+    if (!currentEditingOrderId) return;
+    const orderItem = currentOrder.find(item => item.id === currentEditingOrderId);
+    if (!orderItem) return;
+    const diagnosisInputs = document.querySelectorAll('#diagnosis-codes-container .diagnosis-code-input');
+    const diagnosisCodes = Array.from(diagnosisInputs)
+        .map(input => input.value.trim())
+        .filter(code => code !== '');
+    orderItem.diagnosisCodes = diagnosisCodes;
+    orderItem.icd10 = diagnosisCodes[0] || '';
+    renderOrderList();
 }
 
 function saveEditSidebar() {
@@ -2030,8 +2052,8 @@ function saveEditSidebar() {
     const patientStatusEl = document.getElementById('edit-patient-status');
     orderItem.patientStatus = patientStatusEl ? patientStatusEl.value : 'outpatient';
 
-    // Collect diagnosis codes
-    const diagnosisInputs = document.querySelectorAll('.diagnosis-code-input');
+    // Collect diagnosis codes from the Edit sidebar only (not from test cards)
+    const diagnosisInputs = document.querySelectorAll('#diagnosis-codes-container .diagnosis-code-input');
     const diagnosisCodes = Array.from(diagnosisInputs)
         .map(input => input.value.trim())
         .filter(code => code !== '');
