@@ -1730,14 +1730,33 @@ body {
 /* Pick List Cards */
 .pick-list-card {
     display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
     background-color: #f5f5f5;
     border-radius: 12px;
     border: 1px solid #e0e0e0;
     cursor: pointer;
     transition: all 0.2s;
+}
+
+.pick-list-card-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+}
+
+.pick-list-expanded {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #fafafa;
+    border-radius: 0 0 12px 12px;
+}
+
+.pick-list-card.pick-list-card-expanded .pick-list-expanded {
+    display: block;
 }
 
 .pick-list-card:hover {
@@ -1828,6 +1847,27 @@ body {
     flex-shrink: 0;
 }
 
+.pick-list-edit-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #666;
+}
+
+.pick-list-edit-btn:hover {
+    border-color: #3A5CE9;
+    color: #3A5CE9;
+    background-color: #eef0fc;
+}
+
 .pick-list-delete-btn {
     width: 36px;
     height: 36px;
@@ -1841,6 +1881,58 @@ body {
     cursor: pointer;
     transition: all 0.2s;
     color: #999;
+}
+
+/* Expanded pick list: test list */
+.pick-list-test-list {
+    list-style: none;
+    margin: 0;
+    padding: 12px 0 0;
+}
+
+.pick-list-test-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+}
+
+.pick-list-test-name {
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pick-list-test-remove-btn {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #c62828;
+    background-color: transparent;
+    border: 1px solid #c62828;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pick-list-test-remove-btn:hover {
+    background-color: #ffebee;
+}
+
+.pick-list-test-empty {
+    padding: 12px;
+    font-size: 14px;
+    color: #999;
+    list-style: none;
 }
 
 .pick-list-delete-btn:hover {

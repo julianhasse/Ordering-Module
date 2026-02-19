@@ -396,6 +396,18 @@ function deletePickList(pickListId) {
     }
 }
 
+// Function to remove a test from a pick list
+function removeTestFromPickList(pickListId, testId) {
+    const list = PICK_LISTS.find(l => l.id === pickListId);
+    if (!list) return;
+    list.testIds = list.testIds.filter(id => id !== testId);
+    try {
+        localStorage.setItem('pickLists', JSON.stringify(PICK_LISTS));
+    } catch (e) {
+        console.warn('Could not save pick lists to localStorage:', e);
+    }
+}
+
 // Function to search tests (ready for API replacement)
 function searchTests(query) {
     if (!query || query.trim() === '') {

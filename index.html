@@ -256,11 +256,18 @@
                                 <div class="form-group">
                                     <label for="bill-method">Bill Method</label>
                                     <select id="bill-method" class="form-select">
-                                        <option value="patient" selected>Patient</option>
+                                        <option value="private-insurance" selected>Private Insurance</option>
                                         <option value="client">Client</option>
-                                        <option value="private-insurance">Private Insurance</option>
-                                        <option value="medicaid">Medicaid</option>
+                                        <option value="third-party">Third Party</option>
+                                    </select>
+                                </div>
+                                <div id="secondary-method-group" class="form-group" style="display: none;">
+                                    <label for="secondary-method">Secondary Method</label>
+                                    <select id="secondary-method" class="form-select">
+                                        <option value="">Select...</option>
                                         <option value="medicare">Medicare</option>
+                                        <option value="medicaid">Medicaid</option>
+                                        <option value="other">Other</option>
                                     </select>
                                 </div>
                             </div>
@@ -701,7 +708,7 @@
                                     <button type="button" class="edit-upload-docs-trigger" id="edit-upload-docs-trigger"
                                         aria-label="Add supporting documents">
                                         <span class="edit-upload-docs-icon">+</span>
-                                        <span class="edit-upload-docs-text">Add files</span>
+                                        <span class="edit-upload-docs-text">Add Files (PDF, Doc, PNG)</span>
                                     </button>
                                     <div id="edit-supporting-documents-list" class="edit-supporting-documents-list"
                                         aria-live="polite"></div>

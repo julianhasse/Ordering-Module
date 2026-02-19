@@ -503,30 +503,50 @@ function renderPanels() {
             : `${pickList.testIds.length} tests`;
 
         if (isDetailed) {
+            const testListItemsHtml = pickList.testIds.map(testId => {
+                const test = getTestById(testId);
+                return test ? `
+                    <li class="pick-list-test-item" data-test-id="${testId}">
+                        <span class="pick-list-test-name">${test.name}</span>
+                        <button type="button" class="pick-list-test-remove-btn" aria-label="Remove ${test.name} from pick list" data-pick-list-id="${pickList.id}" data-test-id="${testId}">Delete</button>
+                    </li>
+                ` : '';
+            }).join('');
             pickListCard.innerHTML = `
-                <div class="pick-list-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z" fill="white"/>
-                        <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H13V17H7V15Z" fill="white"/>
-                    </svg>
-                </div>
-                <div class="pick-list-content">
-                    <div class="pick-list-header">
-                        <span class="pick-list-name">${pickList.name}</span>
-                        <span class="pick-list-count">${countText}</span>
+                <div class="pick-list-card-main">
+                    <div class="pick-list-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19Z" fill="white"/>
+                            <path d="M7 7H17V9H7V7ZM7 11H17V13H7V11ZM7 15H13V17H7V15Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <div class="pick-list-content">
+                        <div class="pick-list-header">
+                            <span class="pick-list-name">${pickList.name}</span>
+                            <span class="pick-list-count">${countText}</span>
+                        </div>
+                    </div>
+                    <div class="pick-list-actions">
+                        <button class="pick-list-add-btn" aria-label="Add to Order">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 3V13M3 8H13" stroke="#0066cc" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <button class="pick-list-edit-btn" aria-label="Edit pick list" data-pick-list-id="${pickList.id}" title="Edit">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <button class="pick-list-delete-btn" aria-label="Delete ${pickList.name}" data-pick-list-id="${pickList.id}">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 4H14M12.6667 4V13.3333C12.6667 14 12 14.6667 11.3333 14.6667H4.66667C4 14.6667 3.33333 14 3.33333 13.3333V4M5.33333 4V2.66667C5.33333 2 6 1.33333 6.66667 1.33333H9.33333C10 1.33333 10.6667 2 10.6667 2.66667V4M6.66667 7.33333V11.3333M9.33333 7.33333V11.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-                <div class="pick-list-actions">
-                    <button class="pick-list-add-btn" aria-label="Add to Order">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 3V13M3 8H13" stroke="#0066cc" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </button>
-                    <button class="pick-list-delete-btn" aria-label="Delete ${pickList.name}" data-pick-list-id="${pickList.id}">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 4H14M12.6667 4V13.3333C12.6667 14 12 14.6667 11.3333 14.6667H4.66667C4 14.6667 3.33333 14 3.33333 13.3333V4M5.33333 4V2.66667C5.33333 2 6 1.33333 6.66667 1.33333H9.33333C10 1.33333 10.6667 2 10.6667 2.66667V4M6.66667 7.33333V11.3333M9.33333 7.33333V11.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
+                <div class="pick-list-expanded" aria-hidden="true">
+                    <ul class="pick-list-test-list">${testListItemsHtml || '<li class="pick-list-test-empty">No tests in this list</li>'}</ul>
                 </div>
             `;
         } else {
@@ -544,8 +564,8 @@ function renderPanels() {
         }
 
         pickListCard.addEventListener('click', (e) => {
-            // Don't trigger if clicking buttons
-            if (!e.target.closest('.pick-list-add-btn') && !e.target.closest('.pick-list-delete-btn') && !e.target.closest('.pick-list-delete-btn-small')) {
+            // Don't trigger if clicking buttons or expanded content
+            if (!e.target.closest('.pick-list-add-btn') && !e.target.closest('.pick-list-delete-btn') && !e.target.closest('.pick-list-delete-btn-small') && !e.target.closest('.pick-list-edit-btn') && !e.target.closest('.pick-list-expanded')) {
                 // Add all tests from pick list
                 pickList.testIds.forEach(testId => {
                     addTestToOrder(testId);
@@ -565,6 +585,32 @@ function renderPanels() {
             addBtn.addEventListener('mouseenter', () => showCustomTooltip('Add to Order', addBtn));
             addBtn.addEventListener('mouseleave', hideCustomTooltip);
         }
+
+        // Handle edit button click in detailed view: toggle expanded state
+        const editBtn = pickListCard.querySelector('.pick-list-edit-btn');
+        if (editBtn) {
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                pickListCard.classList.toggle('pick-list-card-expanded');
+                const expandedEl = pickListCard.querySelector('.pick-list-expanded');
+                if (expandedEl) {
+                    expandedEl.setAttribute('aria-hidden', pickListCard.classList.contains('pick-list-card-expanded') ? 'false' : 'true');
+                }
+            });
+            editBtn.addEventListener('mouseenter', () => showCustomTooltip('Edit', editBtn));
+            editBtn.addEventListener('mouseleave', hideCustomTooltip);
+        }
+
+        // Handle delete-test buttons in expanded list
+        pickListCard.querySelectorAll('.pick-list-test-remove-btn').forEach(removeBtn => {
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const plId = removeBtn.dataset.pickListId;
+                const tId = removeBtn.dataset.testId;
+                removeTestFromPickList(plId, tId);
+                renderPanels();
+            });
+        });
 
         // Custom tooltip for compact pick list chip icon
         const pickListChipIcon = pickListCard.querySelector('.chip-icon');
@@ -1098,19 +1144,15 @@ function renderOrderList() {
                 const sourceValue = item.icd10;
                 if (sourceValue) {
                     // Propagate to all other order items
-                    currentOrder.forEach(orderItem => {
-                        if (orderItem.id !== item.id) {
-                            orderItem.icd10 = sourceValue;
-                            // Update diagnosis codes
-                            if (!orderItem.diagnosisCodes) {
-                                orderItem.diagnosisCodes = [];
-                            }
-                            if (sourceValue && !orderItem.diagnosisCodes.includes(sourceValue)) {
-                                orderItem.diagnosisCodes = [sourceValue];
+                    currentOrder.forEach(o => {
+                        if (o.id !== item.id) {
+                            o.icd10 = sourceValue;
+                            if (!o.diagnosisCodes) o.diagnosisCodes = [];
+                            if (sourceValue && !o.diagnosisCodes.includes(sourceValue)) {
+                                o.diagnosisCodes = [sourceValue];
                             }
                         }
                     });
-                    // Re-render order list to show updated values
                     renderOrderList();
                 }
             });
@@ -1121,12 +1163,10 @@ function renderOrderList() {
         if (icd10Input) {
             icd10Input.addEventListener('input', (e) => {
                 item.icd10 = e.target.value;
-                // Update "Add to all" link visibility
                 const addToAllLink = orderItem.querySelector('.add-to-all-link');
                 const fieldLabelRow = orderItem.querySelector('.field-label-row');
                 if (fieldLabelRow) {
                     if (e.target.value.trim() && !addToAllLink) {
-                        // Add the link if value exists
                         const link = document.createElement('a');
                         link.href = '#';
                         link.className = 'add-to-all-link';
@@ -1137,14 +1177,12 @@ function renderOrderList() {
                             e.preventDefault();
                             const sourceValue = item.icd10;
                             if (sourceValue) {
-                                currentOrder.forEach(orderItem => {
-                                    if (orderItem.id !== item.id) {
-                                        orderItem.icd10 = sourceValue;
-                                        if (!orderItem.diagnosisCodes) {
-                                            orderItem.diagnosisCodes = [];
-                                        }
-                                        if (sourceValue && !orderItem.diagnosisCodes.includes(sourceValue)) {
-                                            orderItem.diagnosisCodes = [sourceValue];
+                                currentOrder.forEach(o => {
+                                    if (o.id !== item.id) {
+                                        o.icd10 = sourceValue;
+                                        if (!o.diagnosisCodes) o.diagnosisCodes = [];
+                                        if (sourceValue && !o.diagnosisCodes.includes(sourceValue)) {
+                                            o.diagnosisCodes = [sourceValue];
                                         }
                                     }
                                 });
@@ -1153,7 +1191,6 @@ function renderOrderList() {
                         });
                         fieldLabelRow.appendChild(link);
                     } else if (!e.target.value.trim() && addToAllLink) {
-                        // Remove the link if value is empty
                         addToAllLink.remove();
                     }
                 }
@@ -1865,7 +1902,8 @@ let orderDetailsData = {
         location: '',
         notes: '',
         urgent: false,
-        billMethod: 'patient',
+        billMethod: 'private-insurance',
+        secondaryMethod: '',
         workmansComp: 'no',
         ehrControlNumber: ''
     },
@@ -1947,6 +1985,14 @@ function initializeOrderDetailsAccordion() {
             });
             form.addEventListener('change', () => {
                 saveOrderDetailsData();
+            });
+        }
+        // Show/hide Secondary Method when Bill Method changes
+        const billMethodSelect = document.getElementById('bill-method');
+        const secondaryMethodGroup = document.getElementById('secondary-method-group');
+        if (billMethodSelect && secondaryMethodGroup) {
+            billMethodSelect.addEventListener('change', () => {
+                secondaryMethodGroup.style.display = billMethodSelect.value === 'third-party' ? 'block' : 'none';
             });
         }
         const npiInputForError = document.querySelector('#order-details-accordion-content #provider-npi') || document.getElementById('provider-npi');
@@ -2068,7 +2114,17 @@ function populateOrderDetailsForm() {
     // Bill Method
     const billMethodEl = document.getElementById('bill-method');
     if (billMethodEl) {
-        billMethodEl.value = orderDetailsData.order.billMethod || 'patient';
+        const billMethod = orderDetailsData.order.billMethod || 'private-insurance';
+        const validBillMethods = ['private-insurance', 'client', 'third-party'];
+        billMethodEl.value = validBillMethods.includes(billMethod) ? billMethod : 'private-insurance';
+    }
+    const secondaryMethodEl = document.getElementById('secondary-method');
+    if (secondaryMethodEl) {
+        secondaryMethodEl.value = orderDetailsData.order.secondaryMethod || '';
+    }
+    const secondaryMethodGroup = document.getElementById('secondary-method-group');
+    if (secondaryMethodGroup) {
+        secondaryMethodGroup.style.display = (billMethodEl && billMethodEl.value === 'third-party') ? 'block' : 'none';
     }
 }
 
@@ -2134,6 +2190,8 @@ function saveOrderDetails() {
     if (billMethodEl) {
         orderDetailsData.order.billMethod = billMethodEl.value;
     }
+    const secondaryMethodEl = document.getElementById('secondary-method');
+    orderDetailsData.order.secondaryMethod = (secondaryMethodEl && billMethodEl && billMethodEl.value === 'third-party') ? secondaryMethodEl.value : '';
 
     // Save to localStorage
     saveOrderDetailsData();
