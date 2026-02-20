@@ -1904,6 +1904,24 @@ body {
     overflow-y: auto;
 }
 
+.order-tracker-modal-content {
+    max-width: 520px;
+}
+
+.order-tracker-modal-content .modal-header {
+    border-bottom: 4px solid #3A5CE9;
+}
+
+.order-tracker-body {
+    min-height: 220px;
+    height: 220px;
+    background-image: url('assets/order-tracker.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #fff;
+}
+
 .modal-footer {
     padding: 16px 20px;
     border-top: 1px solid #e0e0e0;
@@ -2245,6 +2263,50 @@ body {
 }
 
 .past-order-download:hover {
+    border-color: #3A5CE9;
+    color: #3A5CE9;
+    background-color: #eef0fc;
+}
+
+.past-order-tracker {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.past-order-tracker:hover {
+    border-color: #3A5CE9;
+    color: #3A5CE9;
+    background-color: #eef0fc;
+}
+
+.past-order-reorder {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.past-order-reorder:hover {
     border-color: #3A5CE9;
     color: #3A5CE9;
     background-color: #eef0fc;

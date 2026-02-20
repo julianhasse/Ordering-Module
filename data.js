@@ -337,13 +337,13 @@ const LAB_TESTS = [
     }
 ];
 
-// Past orders (ready for API replacement) – list of { orderNumber, orderDate (YYYY-MM-DD) }
+// Past orders (ready for API replacement) – list of { orderNumber, orderDate (YYYY-MM-DD), testIds: string[] }
 const PAST_ORDERS = [
-    { orderNumber: 'ORD-10482', orderDate: '2025-01-22' },
-    { orderNumber: 'ORD-10481', orderDate: '2025-01-21' },
-    { orderNumber: 'ORD-10480', orderDate: '2025-01-20' },
-    { orderNumber: 'ORD-10479', orderDate: '2025-01-18' },
-    { orderNumber: 'ORD-10478', orderDate: '2025-01-15' }
+    { orderNumber: 'ORD-10482', orderDate: '2025-01-22', testIds: ['cbc-001', 'bmp-001', 'glucose-001'] },
+    { orderNumber: 'ORD-10481', orderDate: '2025-01-21', testIds: ['tsh-001', 'lipid-001'] },
+    { orderNumber: 'ORD-10480', orderDate: '2025-01-20', testIds: ['cmp-001', 'hba1c-001', 'glucose-001'] },
+    { orderNumber: 'ORD-10479', orderDate: '2025-01-18', testIds: ['cbc-001', 'lipid-001'] },
+    { orderNumber: 'ORD-10478', orderDate: '2025-01-15', testIds: ['bmp-001', 'tsh-001', 'glucose-001'] }
 ];
 
 // Pick Lists (saved bundles of tests)
