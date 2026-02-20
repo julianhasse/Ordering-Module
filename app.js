@@ -1868,8 +1868,6 @@ function openEditSidebar(orderId) {
     document.getElementById('edit-test-name').value = test.name;
     document.getElementById('edit-cpt-code').value = test.cptCode;
     document.getElementById('edit-clinical-indication').value = orderItem.clinicalIndication || '';
-    document.getElementById('edit-start-date').value = orderItem.startDate || '';
-    document.getElementById('edit-end-date').value = orderItem.endDate || '';
     const patientStatusEl = document.getElementById('edit-patient-status');
     if (patientStatusEl) patientStatusEl.value = orderItem.patientStatus || 'outpatient';
 
@@ -2073,8 +2071,6 @@ function saveEditSidebar() {
     // Collect form data
     orderItem.specimen = document.getElementById('edit-specimen').value || '';
     orderItem.clinicalIndication = document.getElementById('edit-clinical-indication').value;
-    orderItem.startDate = document.getElementById('edit-start-date').value;
-    orderItem.endDate = document.getElementById('edit-end-date').value;
     const patientStatusEl = document.getElementById('edit-patient-status');
     orderItem.patientStatus = patientStatusEl ? patientStatusEl.value : 'outpatient';
 
