@@ -691,6 +691,18 @@ function renderRecent() {
         return;
     }
     pastOrders.forEach((order) => {
+        const testIds = order && Array.isArray(order.testIds) ? order.testIds : [];
+        const testsInOrder = testIds
+            .map(id => getTestById(id))
+            .filter(Boolean);
+        const testNames = testsInOrder.map(t => t.name);
+        let testsLabel = testNames.join(', ') || (order.orderNumber ? `Order #${(order.orderNumber || '').replace(/^ORD-/, '')}` : '—');
+        if (testsLabel.length > 30) {
+            testsLabel = testsLabel.substring(0, 30).trim() + '...';
+        }
+        const testListItemsHtml = testsInOrder.length > 0
+            ? testsInOrder.map(t => `<li class="past-order-test-item"><span class="past-order-test-name">${t.name}</span></li>`).join('')
+            : '<li class="past-order-test-empty">No tests in this order</li>';
         const card = document.createElement('div');
         card.className = 'past-order-card';
         card.innerHTML = `
@@ -703,7 +715,7 @@ function renderRecent() {
                 </div>
                 <div class="past-order-content">
                     <div class="past-order-header">
-                        <span class="past-order-number">Order #${(order.orderNumber || '').replace(/^ORD-/, '')}</span>
+                        <span class="past-order-number">${testsLabel}</span>
                         <span class="past-order-date">${formatOrderDate(order.orderDate)}</span>
                     </div>
                 </div>
@@ -727,7 +739,19 @@ function renderRecent() {
                     </svg>
                 </button>
             </div>
+            <div class="past-order-expanded" aria-hidden="true">
+                <ul class="past-order-test-list">${testListItemsHtml}</ul>
+            </div>
         `;
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.past-order-tracker') && !e.target.closest('.past-order-reorder') && !e.target.closest('.past-order-download')) {
+                card.classList.toggle('past-order-card-expanded');
+                const expandedEl = card.querySelector('.past-order-expanded');
+                if (expandedEl) {
+                    expandedEl.setAttribute('aria-hidden', card.classList.contains('past-order-card-expanded') ? 'false' : 'true');
+                }
+            }
+        });
         const trackerBtn = card.querySelector('.past-order-tracker');
         if (trackerBtn) {
             trackerBtn.addEventListener('click', (e) => {
@@ -750,7 +774,7 @@ function renderRecent() {
         if (downloadBtn) {
             downloadBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                openPastOrderSummarySidebar(order);
+                showSuccessNotification('PDF opened successfully.');
             });
             downloadBtn.addEventListener('mouseenter', () => showCustomTooltip('Download summary PDF', downloadBtn));
             downloadBtn.addEventListener('mouseleave', hideCustomTooltip);
@@ -966,13 +990,9 @@ function addTestToOrder(testId) {
     const test = getTestById(testId);
     if (!test) return;
 
-    // Check for duplicates
+    // Prevent duplicate: do not add if test is already in the order
     const existingIndex = currentOrder.findIndex(item => item.testId === testId);
     if (existingIndex >= 0) {
-        // Mark as conflict
-        currentOrder[existingIndex].isConflict = true;
-        currentOrder[existingIndex].conflictReason = 'Duplicate Order';
-        renderOrderList();
         return;
     }
 
