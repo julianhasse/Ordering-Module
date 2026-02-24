@@ -474,7 +474,7 @@ function renderPanels() {
     if (pickLists.length === 0) {
         const emptyMsg = document.createElement('p');
         emptyMsg.className = 'pick-lists-empty-message';
-        emptyMsg.textContent = 'No pick lists created';
+        emptyMsg.textContent = 'Create a Pick List to make selecting items fast and easy.';
         container.appendChild(emptyMsg);
         return;
     }
@@ -725,17 +725,15 @@ function renderRecent() {
                         <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                 </button>
-                <button type="button" class="past-order-reorder" aria-label="Reorder" data-order-number="${order.orderNumber}" title="Add tests from this order to current order">
+                <button type="button" class="past-order-reorder" aria-label="Add tests from this order" data-order-number="${order.orderNumber}">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
-                <button type="button" class="past-order-download" aria-label="Download summary PDF" data-order-number="${order.orderNumber}" title="Download summary PDF">
+                <button type="button" class="past-order-download" aria-label="Open PDF" data-order-number="${order.orderNumber}" title="Open PDF">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <polyline points="7 10 12 15 17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 2v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
             </div>
@@ -776,7 +774,7 @@ function renderRecent() {
                 e.stopPropagation();
                 showSuccessNotification('PDF opened successfully.');
             });
-            downloadBtn.addEventListener('mouseenter', () => showCustomTooltip('Download summary PDF', downloadBtn));
+            downloadBtn.addEventListener('mouseenter', () => showCustomTooltip('Open PDF', downloadBtn));
             downloadBtn.addEventListener('mouseleave', hideCustomTooltip);
         }
         container.appendChild(card);
