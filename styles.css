@@ -52,6 +52,21 @@ body {
     background-color: #fafafa;
 }
 
+/* Branding (left pane) */
+.app-branding {
+    padding: 16px 20px 16px;
+    background-color: #fff;
+    flex-shrink: 0;
+}
+
+.app-branding-logo {
+    display: block;
+    height: 24px;
+    width: auto;
+    object-fit: contain;
+    object-position: left center;
+}
+
 /* Zone 1: Omni-Search Header */
 .search-header {
     position: sticky;
@@ -72,8 +87,9 @@ body {
 }
 
 .account-label {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 600;
+    line-height: 1.25;
     color: #333;
 }
 
@@ -728,6 +744,7 @@ body {
 }
 
 .accordion-title {
+    font-family: 'Source Sans 3', sans-serif;
     font-size: 15px;
     font-weight: 600;
     color: #333;
@@ -843,6 +860,7 @@ body {
 .order-header h2 {
     font-size: 18px;
     font-weight: 600;
+    line-height: 1.25;
     margin: 0;
     color: #333;
 }
