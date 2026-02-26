@@ -1099,6 +1099,21 @@ function updateOrderPriority() {
     renderOrderList();
 }
 
+function isOmniSeqRequiredComplete(item) {
+    if (!item || item.test?.id !== 'omniseq-insight-001') return true;
+    const o = item.omniseqAoes || {};
+    const required = [
+        o.treatingPhysicianSame,
+        o.sampleCollectionSite,
+        o.tumorType,
+        o.submittingSpecimen,
+        o.specimenId,
+        o.specimenType,
+        o.blockQuantity
+    ];
+    return required.every(v => v != null && String(v).trim() !== '');
+}
+
 function renderOrderList() {
     if (currentOrder.length === 0) {
         orderList.innerHTML = '<div class="empty-state"><p>No tests selected. Use search or quick selections to add tests.</p></div>';
@@ -1117,23 +1132,28 @@ function renderOrderList() {
 
         const test = item.test;
         const isOmniSeq = test.id === 'omniseq-insight-001';
-        const showOmniSeqRequiredHint = isOmniSeq && !item.omniseqSidebarOpened;
+        const showOmniSeqRequiredHint = isOmniSeq && !isOmniSeqRequiredComplete(item);
         const editBtnClass = showOmniSeqRequiredHint ? 'order-item-edit order-item-edit-required' : 'order-item-edit';
-        const omniseqWarningHtml = showOmniSeqRequiredHint
-            ? '<span class="order-item-omniseq-warning" aria-label="Required fields"><span class="order-item-warning-icon">⚠</span></span>'
+        const editBtnWrapHtml = showOmniSeqRequiredHint
+            ? `<span class="order-item-edit-wrap"><button class="${editBtnClass}" data-order-id="${item.id}" aria-label="Edit additional details" title="More Options">⋯</button><span class="order-item-edit-badge" aria-hidden="true"></span></span>`
+            : `<button class="${editBtnClass}" data-order-id="${item.id}" aria-label="Edit additional details" title="More Options">⋯</button>`;
+        const omniseqMessageHtml = showOmniSeqRequiredHint
+            ? '<div class="order-item-omniseq-message"><span class="order-item-warning-icon" aria-hidden="true">⚠</span> More information is required</div>'
             : '';
 
         orderItem.innerHTML = `
             <div class="order-item-header">
-                <div class="order-item-name">${test.name}</div>
-                <div class="order-item-actions">
-                    ${omniseqWarningHtml}
-                    <button class="${editBtnClass}" data-order-id="${item.id}" aria-label="Edit additional details" title="More Options">⋯</button>
-                    <button class="order-item-remove" aria-label="Remove test" title="Remove">×</button>
-                    <button type="button" class="order-item-toggle" aria-expanded="true" aria-label="Collapse test details">
-                        <span class="accordion-icon">▼</span>
-                    </button>
+                <div class="order-item-header-top">
+                    <div class="order-item-name">${test.name}</div>
+                    <div class="order-item-actions">
+                        ${editBtnWrapHtml}
+                        <button class="order-item-remove" aria-label="Remove test" title="Remove">×</button>
+                        <button type="button" class="order-item-toggle" aria-expanded="true" aria-label="Collapse test details">
+                            <span class="accordion-icon">▼</span>
+                        </button>
+                    </div>
                 </div>
+                ${omniseqMessageHtml}
             </div>
             <div class="order-item-details">
                 <div class="order-item-row">

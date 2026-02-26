@@ -940,15 +940,53 @@ body {
 
 .order-item-header {
     display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 12px;
+}
+
+.order-item-header-top {
+    display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
 }
 
 .order-item-actions {
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+.order-item-edit-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.order-item-edit-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 10px;
+    height: 10px;
+    background-color: #c62828;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.order-item-omniseq-message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #c62828;
+}
+
+.order-item-omniseq-message .order-item-warning-icon {
+    color: #c62828;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 
 .order-item-toggle {
@@ -1022,7 +1060,7 @@ body {
     background-color: #eef0fc;
 }
 
-/* OmniSeq card: red three-dots and warning icon until sidebar is opened */
+/* OmniSeq card: red three-dots border until required fields are complete */
 .order-item-edit.order-item-edit-required {
     color: #c62828;
     border-color: #c62828;
@@ -1032,17 +1070,6 @@ body {
     color: #c62828;
     border-color: #c62828;
     background-color: #ffebee;
-}
-
-.order-item-omniseq-warning {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 4px;
-}
-
-.order-item-omniseq-warning .order-item-warning-icon {
-    color: #c62828;
-    font-size: 14px;
 }
 
 .order-item-remove {
