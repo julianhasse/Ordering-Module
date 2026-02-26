@@ -544,7 +544,7 @@ body {
     align-items: center;
     gap: 16px;
     padding: 16px;
-    background-color: #f5f5f5;
+    background-color: #F4F4F4; /* gray-50, Guidelines – AA compliant */
     border-radius: 12px;
     border: 1px solid #e0e0e0;
     cursor: pointer;
@@ -688,12 +688,13 @@ body {
 }
 
 .test-card-favorite-btn:hover {
-    color: #F7C93F;
-    background-color: rgba(247, 201, 63, 0.12);
+    color: #C4960C;
+    background-color: rgba(196, 150, 12, 0.12);
 }
 
+/* AA-compliant gold for filled star (warning-600: 3:1+ on card background) */
 .test-card-favorite-btn .test-card-favorite-star-filled {
-    color: #F7C93F;
+    color: #C4960C;
 }
 
 .test-card-favorite-btn:focus {
