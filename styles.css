@@ -728,11 +728,19 @@ body {
     border-bottom: 1px solid #e0e0e0;
     cursor: pointer;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
     transition: background-color 0.2s;
     text-align: left;
+}
+
+.accordion-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 12px;
 }
 
 .accordion-header:hover {
@@ -988,6 +996,11 @@ body {
     color: #c62828;
     font-size: 14px;
     flex-shrink: 0;
+}
+
+.accordion-npi-verify {
+    margin-top: 2px;
+    margin-bottom: 0;
 }
 
 .order-item-toggle {

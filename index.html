@@ -126,15 +126,34 @@
                 <!-- Order Details Accordion -->
                 <div class="order-details-accordion">
                     <button class="accordion-header" id="order-details-accordion-toggle" aria-expanded="false">
-                        <span class="accordion-title">Order Details</span>
-                        <span id="npi-warning" class="npi-warning" style="display: none;">
-                            <span class="npi-warning-icon">⚠</span>
-                            <span class="npi-warning-text">Confirm NPI Number</span>
+                        <span class="accordion-header-row">
+                            <span class="accordion-title">Order Details</span>
+                            <span class="accordion-icon">▼</span>
                         </span>
-                        <span class="accordion-icon">▼</span>
+                        <span id="npi-warning" class="order-item-omniseq-message accordion-npi-verify" style="display: none;">
+                            <span class="order-item-warning-icon" aria-hidden="true">⚠</span>
+                            <span>Verify NPI number</span>
+                        </span>
                     </button>
                     <div class="accordion-content" id="order-details-accordion-content">
                         <form id="order-details-form">
+                            <!-- Provider Information -->
+                            <div class="form-section">
+                                <h3 class="section-title">Provider Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group form-group-half">
+                                        <label for="provider-name">Ordering Provider</label>
+                                        <input type="text" id="provider-name" class="form-input"
+                                            placeholder="Dr. Last, First">
+                                    </div>
+                                    <div class="form-group form-group-half">
+                                        <label for="provider-npi">NPI</label>
+                                        <input type="text" id="provider-npi" class="form-input"
+                                            placeholder="National Provider Identifier">
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Patient Information -->
                             <div class="form-section">
                                 <h3 class="section-title">Patient Information</h3>
@@ -262,23 +281,6 @@
                                         <option value="sibling">Sibling</option>
                                         <option value="other">Other</option>
                                     </select>
-                                </div>
-                            </div>
-
-                            <!-- Provider Information -->
-                            <div class="form-section">
-                                <h3 class="section-title">Provider Information</h3>
-                                <div class="form-row">
-                                    <div class="form-group form-group-half">
-                                        <label for="provider-name">Ordering Provider</label>
-                                        <input type="text" id="provider-name" class="form-input"
-                                            placeholder="Dr. Last, First">
-                                    </div>
-                                    <div class="form-group form-group-half">
-                                        <label for="provider-npi">NPI</label>
-                                        <input type="text" id="provider-npi" class="form-input"
-                                            placeholder="National Provider Identifier">
-                                    </div>
                                 </div>
                             </div>
 
