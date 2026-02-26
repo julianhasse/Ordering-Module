@@ -562,7 +562,7 @@ body {
     width: 48px;
     height: 48px;
     min-width: 48px;
-    background-color: #3A5CE9;
+    background-color: #1A2188;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -618,7 +618,7 @@ body {
 
 .test-card-cpt {
     font-size: 13px;
-    color: #999;
+    color: #575656; /* gray-700, Guidelines – AA compliant */
     font-weight: 500;
     white-space: nowrap;
     flex-shrink: 0;
@@ -633,7 +633,7 @@ body {
 }
 
 .test-card-category {
-    color: #3A5CE9;
+    color: #1A2188;
     font-weight: 500;
 }
 
