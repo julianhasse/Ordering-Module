@@ -261,8 +261,8 @@ body {
 }
 
 .combobox-favorite:hover {
-    color: #F7C93F;
-    background-color: rgba(247, 201, 63, 0.12);
+    color: #3A5CE9;
+    background-color: rgba(58, 92, 233, 0.12);
 }
 
 .combobox-favorite svg {
@@ -688,13 +688,12 @@ body {
 }
 
 .test-card-favorite-btn:hover {
-    color: #C4960C;
-    background-color: rgba(196, 150, 12, 0.12);
+    color: #3A5CE9;
+    background-color: rgba(58, 92, 233, 0.12);
 }
 
-/* AA-compliant gold for filled star (warning-600: 3:1+ on card background) */
 .test-card-favorite-btn .test-card-favorite-star-filled {
-    color: #C4960C;
+    color: #3A5CE9;
 }
 
 .test-card-favorite-btn:focus {
