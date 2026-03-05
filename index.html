@@ -132,7 +132,7 @@
                         </span>
                         <span id="npi-warning" class="order-item-omniseq-message accordion-npi-verify" style="display: none;">
                             <span class="order-item-warning-icon" aria-hidden="true">⚠</span>
-                            <span>Verify NPI number</span>
+                            <span>More information is required</span>
                         </span>
                     </button>
                     <div class="accordion-content" id="order-details-accordion-content">
@@ -290,7 +290,7 @@
                                 <div class="form-group">
                                     <label for="bill-method">Bill Method</label>
                                     <select id="bill-method" class="form-select">
-                                        <option value="private-insurance" selected>Private Insurance</option>
+                                        <option value="patient" selected>Patient</option>
                                         <option value="client">Client</option>
                                         <option value="third-party">Third Party</option>
                                     </select>
@@ -638,6 +638,14 @@
                                 </div>
                                 <button type="button" id="add-diagnosis-btn" class="btn-add-diagnosis">+ Add Diagnosis
                                     Code</button>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="field-label">Fasting</label>
+                                <div id="edit-fasting-group" class="fasting-segmented-group">
+                                    <button type="button" class="fasting-segmented-btn" data-value="no" aria-label="Fasting: No">No</button>
+                                    <button type="button" class="fasting-segmented-btn" data-value="yes" aria-label="Fasting: Yes">Yes</button>
+                                </div>
                             </div>
 
                             <div class="form-group">

@@ -1384,7 +1384,7 @@ function renderOrderList() {
             </div>
             <div class="order-item-details">
                 <div class="order-item-row">
-                    <div class="order-item-field order-item-field-diagnosis">
+                    <div class="order-item-field order-item-field-full">
                         <div class="field-label-row">
                             <label class="field-label">Diagnosis code</label>
                             ${((item.diagnosisCodes && item.diagnosisCodes.length) || item.icd10) ? `<a href="#" class="add-to-all-link" data-order-id="${item.id}" data-field="diagnosisCodes">Add to all</a>` : ''}
@@ -1400,6 +1400,8 @@ function renderOrderList() {
                             <input type="text" class="order-field-input diagnosis-code-input" placeholder="${(item.diagnosisCodes && item.diagnosisCodes.length) || item.icd10 ? '' : 'Enter Diagnosis Code'}" data-order-id="${item.id}" aria-label="Diagnosis code for ${test.name}" ${(item.diagnosisCodes && item.diagnosisCodes.length >= 10) ? 'disabled' : ''}>
                         </div>
                     </div>
+                </div>
+                <div class="order-item-row">
                     ${test.requiresSpecimen ? `
                         <div class="order-item-field">
                             <label class="field-label">Specimen</label>
@@ -1411,15 +1413,6 @@ function renderOrderList() {
                             </select>
                         </div>
                     ` : ''}
-                    <div class="order-item-field order-item-field-fasting">
-                        <label class="field-label">Fasting</label>
-                        <div class="fasting-segmented-group" data-order-id="${item.id}">
-                            <button type="button" class="fasting-segmented-btn ${item.fasting !== 'yes' ? 'active' : ''}" data-value="no" aria-label="Fasting: No">No</button>
-                            <button type="button" class="fasting-segmented-btn ${item.fasting === 'yes' ? 'active' : ''}" data-value="yes" aria-label="Fasting: Yes">Yes</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="order-item-row">
                     <div class="order-item-field order-item-field-full">
                         <label class="field-label">Clinical Comments</label>
                         <input 
@@ -1536,22 +1529,6 @@ function renderOrderList() {
                     diagnosisInput.focus();
                 });
             }
-        }
-
-        // Handle fasting segmented buttons
-        const fastingGroup = orderItem.querySelector('.fasting-segmented-group');
-        if (fastingGroup) {
-            const fastingButtons = fastingGroup.querySelectorAll('.fasting-segmented-btn');
-            fastingButtons.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    // Remove active class from all buttons in this group
-                    fastingButtons.forEach(b => b.classList.remove('active'));
-                    // Add active class to clicked button
-                    e.target.classList.add('active');
-                    // Update item
-                    item.fasting = e.target.dataset.value;
-                });
-            });
         }
 
         // Handle "Add to all" link for diagnosis codes (copies full array)
@@ -1805,8 +1782,8 @@ function populatePastOrderSummaryContent(order) {
                 <div class="review-detail-row">
                     <span class="review-label">Bill Method:</span>
                     <span class="review-value">${(function() {
-                        const v = orderDetailsData.order.billMethod || 'private-insurance';
-                        if (v === 'private-insurance') return 'Private Insurance';
+                        const v = orderDetailsData.order.billMethod || 'patient';
+                        if (v === 'patient') return 'Patient';
                         if (v === 'client') return 'Client';
                         if (v === 'third-party') return 'Third Party';
                         return v;
@@ -1963,8 +1940,8 @@ function populateReviewContent() {
                 <div class="review-detail-row">
                     <span class="review-label">Bill Method:</span>
                     <span class="review-value">${(function() {
-                        const v = orderDetailsData.order.billMethod || 'private-insurance';
-                        if (v === 'private-insurance') return 'Private Insurance';
+                        const v = orderDetailsData.order.billMethod || 'patient';
+                        if (v === 'patient') return 'Patient';
                         if (v === 'client') return 'Client';
                         if (v === 'third-party') return 'Third Party';
                         return v;
@@ -1978,28 +1955,29 @@ function populateReviewContent() {
         </div>
     `;
 
-    // Tests Summary - compact two-line cards
+    // Tests Summary - compact one-line cards
     html += `
         <div class="review-section">
             <h3 class="review-section-title">Tests (${currentOrder.length})</h3>
             <div class="review-tests">
     `;
 
+    const DUMMY_REVIEW_ICD_CODES = ['E11.9', 'I10', 'R53.83'];
+
     currentOrder.forEach((item, index) => {
         const test = item.test;
         const primaryDx = (item.diagnosisCodes && item.diagnosisCodes.length > 0)
             ? item.diagnosisCodes[0]
             : (item.icd10 || '');
-        const dxDescription = getIcd10Description(primaryDx);
+        const displayDx = primaryDx || DUMMY_REVIEW_ICD_CODES[index % DUMMY_REVIEW_ICD_CODES.length];
         html += `
             <div class="review-test-item" data-order-id="${item.id}">
                 <div class="review-test-line-primary">
-                    <span class="review-test-name">${test.name}</span>
+                    <span class="review-test-main">
+                        <span class="review-test-name">${test.name}</span>
+                        <span class="review-test-dx-value review-value" contenteditable="true" data-order-id="${item.id}" data-field="icd10">${displayDx}</span>
+                    </span>
                     <span class="review-test-code">${test.cptCode}</span>
-                </div>
-                <div class="review-test-line-secondary">
-                    <span class="review-test-dx-label">ICD-10</span>
-                    <span class="review-test-dx-value review-value" contenteditable="true" data-order-id="${item.id}" data-field="icd10">${primaryDx}</span>${dxDescription ? ` <span class="review-test-dx-desc">${dxDescription}</span>` : ''}
                 </div>
             </div>
         `;
@@ -2007,6 +1985,57 @@ function populateReviewContent() {
 
     html += `
             </div>
+        </div>
+        <div class="review-section review-abn-card">
+            <h3 class="review-section-title">ABN Detail</h3>
+            <p class="review-abn-disclaimer">
+                Your order contains a test(s) that is subject to a National Coverage Determination (NCD) or a Local Coverage Determination (LCD) of the applicable Medicare Administrative Contractor (MAC), or it has a component(s) that is considered to be a new technology test(s) and/or investigational procedure(s).
+            </p>
+            <h4 class="review-abn-subheader">NCD/LCD Details</h4>
+            <p class="review-abn-text">
+                For the listed CPT Code(s), the ICD-CM code(s) entered is not supportive of &quot;medical necessity&quot; and/or the test(s) ordered has published frequency guidelines. Therefore, the patient must sign and date an Advance Beneficiary Notice of Coverage (&quot;ABN&quot;).
+            </p>
+            <p class="review-abn-text"><span class="review-abn-label">Results for Requisition:</span> <span class="review-abn-value">REQ-123456</span></p>
+            <p class="review-abn-emphasis">
+                <span class="review-abn-icon" aria-hidden="true">&#9888;</span>
+                <strong>Please inform your patient that they will be required to sign and date the ABN at the Patient Service Center (PSC).</strong>
+            </p>
+            <div class="review-abn-table-wrapper">
+                <table class="review-abn-table">
+                    <thead>
+                        <tr>
+                            <th>Test Code</th>
+                            <th>Test Description</th>
+                            <th>CPT Code</th>
+                            <th>Est. Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>10001</td>
+                            <td>CBC with Differential/Platelet</td>
+                            <td>85025</td>
+                            <td>$85.00</td>
+                        </tr>
+                        <tr>
+                            <td>20002</td>
+                            <td>Comprehensive Metabolic Panel</td>
+                            <td>80053</td>
+                            <td>$120.00</td>
+                        </tr>
+                        <tr>
+                            <td>30003</td>
+                            <td>Lipid Panel</td>
+                            <td>80061</td>
+                            <td>$95.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="review-abn-total"><strong>Total Estimated Cost of Test(s) that Medicare may not pay is: $300.00</strong></p>
+            <p class="review-abn-notes">
+                <strong>NOTES:</strong> the diagnosis code(s) must be consistent with the diagnosis found in the patient's medical record for that date of service. Do not update the diagnosis code(s) without first consulting the patient's provider or designee.
+            </p>
         </div>
     `;
 
@@ -2220,6 +2249,18 @@ function openEditSidebar(orderId) {
     // Populate diagnosis codes
     renderDiagnosisCodes(orderItem.diagnosisCodes || (orderItem.icd10 ? [orderItem.icd10] : []));
 
+    // Populate fasting segmented buttons in sidebar
+    const editFastingGroup = document.getElementById('edit-fasting-group');
+    if (editFastingGroup) {
+        const fastingButtons = editFastingGroup.querySelectorAll('.fasting-segmented-btn');
+        fastingButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.value === (orderItem.fasting === 'yes' ? 'yes' : 'no')) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
     // Clear upload documents list and file input when opening
     const fileInput = document.getElementById('edit-supporting-documents');
     const docsList = document.getElementById('edit-supporting-documents-list');
@@ -2308,6 +2349,30 @@ function setupSidebarListeners() {
     newAddBtn.addEventListener('click', () => {
         addDiagnosisCodeInput();
     });
+
+    // Fasting segmented buttons in sidebar
+    const fastingGroup = document.getElementById('edit-fasting-group');
+    if (fastingGroup) {
+        const buttons = fastingGroup.querySelectorAll('.fasting-segmented-btn');
+        buttons.forEach(btn => {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+        });
+        const refreshedButtons = fastingGroup.querySelectorAll('.fasting-segmented-btn');
+        refreshedButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                refreshedButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if (currentEditingOrderId) {
+                    const orderItem = currentOrder.find(item => item.id === currentEditingOrderId);
+                    if (orderItem) {
+                        orderItem.fasting = btn.dataset.value;
+                        renderOrderList();
+                    }
+                }
+            });
+        });
+    }
 
     // Save button
     const saveBtn = document.getElementById('sidebar-save');
@@ -2477,7 +2542,7 @@ let orderDetailsData = {
         location: '',
         notes: '',
         urgent: false,
-        billMethod: 'private-insurance',
+        billMethod: 'patient',
         secondaryMethod: '',
         workmansComp: 'no',
         ehrControlNumber: ''
@@ -2689,9 +2754,9 @@ function populateOrderDetailsForm() {
     // Bill Method
     const billMethodEl = document.getElementById('bill-method');
     if (billMethodEl) {
-        const billMethod = orderDetailsData.order.billMethod || 'private-insurance';
-        const validBillMethods = ['private-insurance', 'client', 'third-party'];
-        billMethodEl.value = validBillMethods.includes(billMethod) ? billMethod : 'private-insurance';
+        const billMethod = orderDetailsData.order.billMethod || 'patient';
+        const validBillMethods = ['patient', 'client', 'third-party'];
+        billMethodEl.value = validBillMethods.includes(billMethod) ? billMethod : 'patient';
     }
     const secondaryMethodEl = document.getElementById('secondary-method');
     if (secondaryMethodEl) {
