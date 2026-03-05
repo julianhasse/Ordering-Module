@@ -91,10 +91,237 @@ function hideDiagnosisCombobox() {
     currentDiagnosisInput = null;
 }
 
+// ==================== PROVIDER COMBOBOX (Recently Used Providers) ====================
+
+const PROVIDER_STORAGE_KEY = 'recentProviders';
+const PROVIDER_LIST_CAP = 15;
+const DEFAULT_RECENT_PROVIDERS = [
+    { npi: '1234567890', name: 'Dr. Smith, John' },
+    { npi: '0987654321', name: 'Dr. Doe, Jane' },
+    { npi: '1122334455', name: 'Dr. House, Gregory' }
+];
+
+let recentProviders = [];
+let providerComboboxEl = null;
+let activeNpiInput = null;
+let activeProviderNameInput = null;
+let providerHighlightedIndex = -1;
+
+function loadRecentProviders() {
+    try {
+        const raw = localStorage.getItem(PROVIDER_STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            recentProviders = Array.isArray(parsed) ? parsed : DEFAULT_RECENT_PROVIDERS.slice();
+        } else {
+            recentProviders = DEFAULT_RECENT_PROVIDERS.slice();
+        }
+    } catch (_) {
+        recentProviders = DEFAULT_RECENT_PROVIDERS.slice();
+    }
+    return recentProviders;
+}
+
+function saveRecentProviders() {
+    try {
+        localStorage.setItem(PROVIDER_STORAGE_KEY, JSON.stringify(recentProviders));
+    } catch (_) {}
+}
+
+function isValidNpi(npi) {
+    if (!npi || typeof npi !== 'string') return false;
+    const trimmed = npi.trim();
+    return /^\d{10}$/.test(trimmed);
+}
+
+function upsertRecentProvider({ npi, name }) {
+    if (!name || typeof name !== 'string' || name.trim() === '') return;
+    if (!isValidNpi(npi)) return;
+    const n = name.trim();
+    const num = npi.trim();
+    recentProviders = recentProviders.filter(p => p.npi !== num);
+    recentProviders.unshift({ npi: num, name: n });
+    if (recentProviders.length > PROVIDER_LIST_CAP) {
+        recentProviders = recentProviders.slice(0, PROVIDER_LIST_CAP);
+    }
+}
+
+function initProviderCombobox() {
+    providerComboboxEl = document.getElementById('provider-combobox');
+    if (!providerComboboxEl) return;
+
+    providerComboboxEl.addEventListener('click', (e) => {
+        const item = e.target.closest('.provider-combobox-item');
+        if (item && activeNpiInput && activeProviderNameInput) {
+            const npi = item.dataset.npi;
+            const name = item.dataset.name;
+            if (npi != null && name != null) {
+                activeNpiInput.value = npi;
+                activeProviderNameInput.value = name;
+                activeNpiInput.dispatchEvent(new Event('input', { bubbles: true }));
+                if (typeof hideNPIWarning === 'function') hideNPIWarning();
+                hideProviderCombobox();
+            }
+        }
+    });
+
+    const npiInputs = document.querySelectorAll('input#provider-npi');
+    npiInputs.forEach((npiInput) => {
+        const form = npiInput.closest('form');
+        const nameInput = form ? form.querySelector('input#provider-name') : null;
+        if (!nameInput) return;
+
+        npiInput.addEventListener('focus', () => {
+            showProviderCombobox(npiInput, nameInput, npiInput.value || '');
+        });
+        npiInput.addEventListener('click', () => {
+            showProviderCombobox(npiInput, nameInput, npiInput.value || '');
+        });
+        npiInput.addEventListener('input', () => {
+            showProviderCombobox(npiInput, nameInput, npiInput.value || '');
+        });
+        npiInput.addEventListener('keydown', handleProviderKeydown);
+        npiInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if (!providerComboboxEl || !providerComboboxEl.matches(':hover')) {
+                    const active = document.activeElement;
+                    if (active !== npiInput && !providerComboboxEl.contains(active)) {
+                        hideProviderCombobox();
+                    }
+                }
+            }, 200);
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!providerComboboxEl || !providerComboboxEl.classList.contains('show')) return;
+        if (providerComboboxEl.contains(e.target)) return;
+        const inputs = document.querySelectorAll('input#provider-npi');
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].contains(e.target)) return;
+        }
+        hideProviderCombobox();
+    });
+}
+
+function handleProviderKeydown(e) {
+    if (!providerComboboxEl || !providerComboboxEl.classList.contains('show')) return;
+    const items = providerComboboxEl.querySelectorAll('.provider-combobox-item');
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        providerHighlightedIndex = Math.min(providerHighlightedIndex + 1, items.length - 1);
+        updateProviderHighlight(items);
+        scrollToProviderHighlighted(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        providerHighlightedIndex = Math.max(providerHighlightedIndex - 1, -1);
+        updateProviderHighlight(items);
+        scrollToProviderHighlighted(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (providerHighlightedIndex >= 0 && items[providerHighlightedIndex] && activeNpiInput && activeProviderNameInput) {
+            const item = items[providerHighlightedIndex];
+            activeNpiInput.value = item.dataset.npi || '';
+            activeProviderNameInput.value = item.dataset.name || '';
+            if (typeof hideNPIWarning === 'function') hideNPIWarning();
+            hideProviderCombobox();
+        }
+    } else if (e.key === 'Escape') {
+        e.preventDefault();
+        hideProviderCombobox();
+    }
+}
+
+function updateProviderHighlight(items) {
+    items.forEach((el, i) => {
+        el.classList.toggle('highlighted', i === providerHighlightedIndex);
+    });
+    const id = providerHighlightedIndex >= 0 && items[providerHighlightedIndex] ? items[providerHighlightedIndex].id : '';
+    if (activeNpiInput) {
+        activeNpiInput.setAttribute('aria-activedescendant', id);
+    }
+}
+
+function scrollToProviderHighlighted(items) {
+    if (providerHighlightedIndex < 0 || !items[providerHighlightedIndex]) return;
+    items[providerHighlightedIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function showProviderCombobox(npiInput, nameInput, query) {
+    if (!providerComboboxEl) return;
+    activeNpiInput = npiInput;
+    activeProviderNameInput = nameInput;
+    loadRecentProviders();
+    const q = (query || '').trim().toLowerCase();
+    const list = q === ''
+        ? recentProviders.slice()
+        : recentProviders.filter(p =>
+            (p.npi && p.npi.toLowerCase().includes(q)) ||
+            (p.name && p.name.toLowerCase().includes(q))
+        );
+    renderProviderCombobox(list);
+    const rect = npiInput.getBoundingClientRect();
+    providerComboboxEl.style.left = `${rect.left}px`;
+    providerComboboxEl.style.top = `${rect.bottom + 4}px`;
+    providerComboboxEl.style.minWidth = `${rect.width}px`;
+    const row = npiInput.closest('.form-row');
+    if (row) {
+        const rowRect = row.getBoundingClientRect();
+        providerComboboxEl.style.width = `${rowRect.width}px`;
+    }
+    providerComboboxEl.classList.add('show');
+    providerHighlightedIndex = list.length > 0 ? 0 : -1;
+    updateProviderHighlight(providerComboboxEl.querySelectorAll('.provider-combobox-item'));
+    npiInput.setAttribute('aria-expanded', 'true');
+    npiInput.setAttribute('aria-controls', 'provider-combobox');
+}
+
+function renderProviderCombobox(list) {
+    if (!providerComboboxEl) return;
+    providerComboboxEl.innerHTML = '';
+    if (list.length === 0) {
+        providerComboboxEl.innerHTML = '<div class="provider-combobox-item provider-combobox-empty" role="option">No recently used providers</div>';
+        return;
+    }
+    list.forEach((provider, index) => {
+        const item = document.createElement('div');
+        item.className = 'provider-combobox-item';
+        item.setAttribute('role', 'option');
+        item.id = `provider-option-${index}`;
+        item.dataset.npi = provider.npi;
+        item.dataset.name = provider.name;
+        item.innerHTML = `<span class="provider-combobox-npi">${escapeHtml(provider.npi)}</span><span class="provider-combobox-name">${escapeHtml(provider.name)}</span>`;
+        providerComboboxEl.appendChild(item);
+    });
+}
+
+function escapeHtml(s) {
+    if (s == null) return '';
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+}
+
+function hideProviderCombobox() {
+    if (providerComboboxEl) {
+        providerComboboxEl.classList.remove('show');
+        providerComboboxEl.innerHTML = '';
+    }
+    if (activeNpiInput) {
+        activeNpiInput.setAttribute('aria-expanded', 'false');
+        activeNpiInput.removeAttribute('aria-controls');
+        activeNpiInput.removeAttribute('aria-activedescendant');
+    }
+    activeNpiInput = null;
+    activeProviderNameInput = null;
+    providerHighlightedIndex = -1;
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     initCustomTooltip();
     initDiagnosisCombobox();
+    initProviderCombobox();
     initializeAccountNumber();
     initializeTabs();
     initializeViewToggle();
@@ -1893,6 +2120,14 @@ function handleReviewSubmit() {
 
     // Show success notification
     showSuccessNotification(`Order submitted successfully!\n\n${currentOrder.length} test(s) ordered.`);
+
+    // Persist provider to recently used (implicit save)
+    const npi = orderDetailsData.provider && orderDetailsData.provider.npi ? orderDetailsData.provider.npi.trim() : '';
+    const name = orderDetailsData.provider && orderDetailsData.provider.name ? orderDetailsData.provider.name.trim() : '';
+    if (name && isValidNpi(npi)) {
+        upsertRecentProvider({ npi, name });
+        saveRecentProviders();
+    }
 
     // Clear order
     currentOrder = [];

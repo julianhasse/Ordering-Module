@@ -311,6 +311,62 @@ body {
     background-color: #eef0fc;
 }
 
+/* Provider combobox (Recently Used Providers) */
+.provider-combobox {
+    position: fixed;
+    left: 0;
+    top: 0;
+    min-width: 200px;
+    max-height: 280px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10005;
+    display: none;
+}
+
+.provider-combobox.show {
+    display: block;
+}
+
+.provider-combobox-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.15s;
+    gap: 12px;
+}
+
+.provider-combobox-item:last-child {
+    border-bottom: none;
+}
+
+.provider-combobox-item:hover,
+.provider-combobox-item.highlighted {
+    background-color: #eef0fc;
+}
+
+.provider-combobox-npi {
+    font-weight: 600;
+    color: #231F20;
+}
+
+.provider-combobox-name {
+    color: #575656;
+    flex-shrink: 0;
+}
+
+.provider-combobox-empty {
+    cursor: default;
+    color: #666;
+}
+
 /* Zone 2: Quick Selections */
 .quick-selections {
     flex: 1;

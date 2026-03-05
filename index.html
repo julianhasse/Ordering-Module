@@ -142,14 +142,14 @@
                                 <h3 class="section-title">Provider Information</h3>
                                 <div class="form-row">
                                     <div class="form-group form-group-half">
+                                        <label for="provider-npi">NPI Number</label>
+                                        <input type="text" id="provider-npi" class="form-input"
+                                            placeholder="National Provider Identifier">
+                                    </div>
+                                    <div class="form-group form-group-half">
                                         <label for="provider-name">Ordering Provider</label>
                                         <input type="text" id="provider-name" class="form-input"
                                             placeholder="Dr. Last, First">
-                                    </div>
-                                    <div class="form-group form-group-half">
-                                        <label for="provider-npi">NPI</label>
-                                        <input type="text" id="provider-npi" class="form-input"
-                                            placeholder="National Provider Identifier">
                                     </div>
                                 </div>
                             </div>
@@ -510,14 +510,14 @@
                                 <h3 class="section-title">Provider Information</h3>
                                 <div class="form-row">
                                     <div class="form-group form-group-half">
+                                        <label for="provider-npi">NPI Number</label>
+                                        <input type="text" id="provider-npi" class="form-input"
+                                            placeholder="National Provider Identifier">
+                                    </div>
+                                    <div class="form-group form-group-half">
                                         <label for="provider-name">Ordering Provider</label>
                                         <input type="text" id="provider-name" class="form-input"
                                             placeholder="Dr. Last, First">
-                                    </div>
-                                    <div class="form-group form-group-half">
-                                        <label for="provider-npi">NPI</label>
-                                        <input type="text" id="provider-npi" class="form-input"
-                                            placeholder="National Provider Identifier">
                                     </div>
                                 </div>
                             </div>
@@ -789,6 +789,10 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Provider combobox for NPI Number (Recently Used Providers) -->
+            <div id="provider-combobox" class="provider-combobox" role="listbox"
+                aria-label="Recently used providers"></div>
 
             <div id="diagnosis-combobox" class="diagnosis-combobox" role="listbox"
                 aria-label="Diagnosis code suggestions"></div>
