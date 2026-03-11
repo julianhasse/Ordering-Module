@@ -1,6 +1,8 @@
 // Application State
 let currentOrder = [];
 let selectedPriority = 'routine';
+let orderFasting = 'n/a';
+let orderClinicalComments = '';
 let highlightedIndex = -1;
 let searchTimeout = null;
 let viewMode = 'detailed'; // 'mini' or 'detailed'
@@ -461,6 +463,29 @@ function setupEventListeners() {
             updateOrderPriority();
         });
     });
+
+    // Order-level Fasting (Yes / No / N/A)
+    const orderFastingGroup = document.getElementById('order-fasting-group');
+    if (orderFastingGroup) {
+        const fastingBtns = orderFastingGroup.querySelectorAll('.fasting-segmented-btn');
+        fastingBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                fastingBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                orderFasting = btn.dataset.value;
+                currentOrder.forEach(item => { item.fasting = orderFasting; });
+                renderOrderList();
+            });
+        });
+    }
+
+    // Order-level Clinical Comments
+    const orderClinicalCommentsEl = document.getElementById('order-clinical-comments');
+    if (orderClinicalCommentsEl) {
+        orderClinicalCommentsEl.addEventListener('input', (e) => {
+            orderClinicalComments = e.target.value;
+        });
+    }
 
     // Bottom bar actions
     saveDraftBtn.addEventListener('click', handleSaveDraft);
@@ -1227,7 +1252,7 @@ function addTestToOrder(testId) {
         testId: testId,
         test: test,
         priority: selectedPriority,
-        fasting: 'no',
+        fasting: orderFasting,
         icd10: '',
         diagnosisCodes: [],
         specimen: test.requiresSpecimen ? (test.specimenOptions[0] || '') : '',
@@ -1413,18 +1438,6 @@ function renderOrderList() {
                             </select>
                         </div>
                     ` : ''}
-                    <div class="order-item-field order-item-field-full">
-                        <label class="field-label">Clinical Comments</label>
-                        <input 
-                            type="text" 
-                            class="order-field-input" 
-                            placeholder="Enter clinical comments..."
-                            value="${item.clinicalIndication || ''}"
-                            data-order-id="${item.id}"
-                            data-field="clinicalIndication"
-                            aria-label="Clinical comments for ${test.name}"
-                        >
-                    </div>
                 </div>
                 ${item.isConflict ? `
                     <div class="conflict-warning">
@@ -1839,26 +1852,15 @@ function populatePastOrderSummaryContent(order) {
         </div>
     `;
 
-    const hasAOEs = currentOrder.some(item => item.specialInstructions || item.clinicalIndication);
-    if (hasAOEs) {
+    if (orderClinicalComments && orderClinicalComments.trim() !== '') {
         html += `
             <div class="review-section">
-                <h3 class="review-section-title">AOEs</h3>
-                <div class="review-aoes">
-        `;
-        currentOrder.forEach((item) => {
-            if (item.specialInstructions || item.clinicalIndication) {
-                html += `
-                    <div class="review-aoes-item">
-                        <div class="review-detail-row">
-                            <span class="review-label">${item.test.name}:</span>
-                            <span class="review-value">${item.specialInstructions || item.clinicalIndication || ''}</span>
-                        </div>
+                <h3 class="review-section-title">Clinical Comments</h3>
+                <div class="review-details">
+                    <div class="review-detail-row">
+                        <span class="review-label">Comments:</span>
+                        <span class="review-value">${orderClinicalComments}</span>
                     </div>
-                `;
-            }
-        });
-        html += `
                 </div>
             </div>
         `;
@@ -2039,29 +2041,16 @@ function populateReviewContent() {
         </div>
     `;
 
-    // AOEs Section (if any tests have AOEs)
-    const hasAOEs = currentOrder.some(item => item.specialInstructions || item.clinicalIndication);
-    if (hasAOEs) {
+    // Order-level Clinical Comments (editable)
+    if (orderClinicalComments && orderClinicalComments.trim() !== '') {
         html += `
             <div class="review-section">
-                <h3 class="review-section-title">AOEs</h3>
-                <div class="review-aoes">
-        `;
-
-        currentOrder.forEach((item) => {
-            if (item.specialInstructions || item.clinicalIndication) {
-                html += `
-                    <div class="review-aoes-item">
-                        <div class="review-detail-row">
-                            <span class="review-label">${item.test.name}:</span>
-                            <span class="review-value" contenteditable="true" data-order-id="${item.id}" data-field="specialInstructions">${item.specialInstructions || item.clinicalIndication || ''}</span>
-                        </div>
+                <h3 class="review-section-title">Clinical Comments</h3>
+                <div class="review-details">
+                    <div class="review-detail-row">
+                        <span class="review-label">Comments:</span>
+                        <span class="review-value" contenteditable="true" data-field="orderClinicalComments">${orderClinicalComments}</span>
                     </div>
-                `;
-            }
-        });
-
-        html += `
                 </div>
             </div>
         `;
@@ -2085,6 +2074,12 @@ function setupReviewInlineEditing() {
                 const orderItem = currentOrder.find(item => item.id === orderId);
                 if (orderItem) {
                     orderItem[field] = e.target.textContent.trim();
+                }
+            } else if (field === 'orderClinicalComments') {
+                orderClinicalComments = e.target.textContent.trim();
+                const textarea = document.getElementById('order-clinical-comments');
+                if (textarea) {
+                    textarea.value = orderClinicalComments;
                 }
             } else {
                 // Update order details
@@ -2122,6 +2117,7 @@ function handleReviewSubmit() {
     const orderData = {
         accountNumber: accountInput ? accountInput.value : '12764098',
         orderDetails: orderDetailsData,
+        clinicalComments: orderClinicalComments,
         tests: currentOrder.map(item => ({
             testId: item.testId,
             testName: item.test.name,
@@ -2131,8 +2127,6 @@ function handleReviewSubmit() {
             icd10: item.icd10,
             diagnosisCodes: item.diagnosisCodes || [],
             specimen: item.specimen || null,
-            clinicalIndication: item.clinicalIndication || '',
-            specialInstructions: item.specialInstructions || '',
             frequency: item.frequency || 'once',
             startDate: item.startDate || '',
             endDate: item.endDate || ''
@@ -2227,7 +2221,6 @@ function openEditSidebar(orderId) {
     // Populate form fields
     document.getElementById('edit-test-name').value = test.name;
     document.getElementById('edit-cpt-code').value = test.cptCode;
-    document.getElementById('edit-clinical-indication').value = orderItem.clinicalIndication || '';
     const patientStatusEl = document.getElementById('edit-patient-status');
     if (patientStatusEl) patientStatusEl.value = orderItem.patientStatus || 'outpatient';
 
@@ -2248,18 +2241,6 @@ function openEditSidebar(orderId) {
 
     // Populate diagnosis codes
     renderDiagnosisCodes(orderItem.diagnosisCodes || (orderItem.icd10 ? [orderItem.icd10] : []));
-
-    // Populate fasting segmented buttons in sidebar
-    const editFastingGroup = document.getElementById('edit-fasting-group');
-    if (editFastingGroup) {
-        const fastingButtons = editFastingGroup.querySelectorAll('.fasting-segmented-btn');
-        fastingButtons.forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.value === (orderItem.fasting === 'yes' ? 'yes' : 'no')) {
-                btn.classList.add('active');
-            }
-        });
-    }
 
     // Clear upload documents list and file input when opening
     const fileInput = document.getElementById('edit-supporting-documents');
@@ -2349,30 +2330,6 @@ function setupSidebarListeners() {
     newAddBtn.addEventListener('click', () => {
         addDiagnosisCodeInput();
     });
-
-    // Fasting segmented buttons in sidebar
-    const fastingGroup = document.getElementById('edit-fasting-group');
-    if (fastingGroup) {
-        const buttons = fastingGroup.querySelectorAll('.fasting-segmented-btn');
-        buttons.forEach(btn => {
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-        });
-        const refreshedButtons = fastingGroup.querySelectorAll('.fasting-segmented-btn');
-        refreshedButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                refreshedButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                if (currentEditingOrderId) {
-                    const orderItem = currentOrder.find(item => item.id === currentEditingOrderId);
-                    if (orderItem) {
-                        orderItem.fasting = btn.dataset.value;
-                        renderOrderList();
-                    }
-                }
-            });
-        });
-    }
 
     // Save button
     const saveBtn = document.getElementById('sidebar-save');
@@ -2466,7 +2423,6 @@ function saveEditSidebar() {
 
     // Collect form data
     orderItem.specimen = document.getElementById('edit-specimen').value || '';
-    orderItem.clinicalIndication = document.getElementById('edit-clinical-indication').value;
     const patientStatusEl = document.getElementById('edit-patient-status');
     orderItem.patientStatus = patientStatusEl ? patientStatusEl.value : 'outpatient';
 
@@ -2749,7 +2705,6 @@ function populateOrderDetailsForm() {
     if (workmansCompEl) workmansCompEl.value = orderDetailsData.order.workmansComp || 'no';
     const ehrControlNumberEl = document.getElementById('order-ehr-control-number');
     if (ehrControlNumberEl) ehrControlNumberEl.value = orderDetailsData.order.ehrControlNumber || '';
-    document.getElementById('order-notes').value = orderDetailsData.order.notes || '';
 
     // Bill Method
     const billMethodEl = document.getElementById('bill-method');
@@ -2824,7 +2779,6 @@ function saveOrderDetails() {
     orderDetailsData.order.workmansComp = workmansCompEl ? workmansCompEl.value : 'no';
     const ehrControlNumberEl = document.getElementById('order-ehr-control-number');
     orderDetailsData.order.ehrControlNumber = ehrControlNumberEl ? ehrControlNumberEl.value : '';
-    orderDetailsData.order.notes = document.getElementById('order-notes').value;
 
     const billMethodEl = document.getElementById('bill-method');
     if (billMethodEl) {

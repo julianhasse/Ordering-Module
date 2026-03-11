@@ -372,11 +372,6 @@
                                     <label for="order-ehr-control-number">EHR Control Number (Optional)</label>
                                     <input type="text" id="order-ehr-control-number" class="form-input" placeholder="">
                                 </div>
-                                <div class="form-group">
-                                    <label for="order-notes">Order Notes</label>
-                                    <textarea id="order-notes" class="form-textarea" rows="3"
-                                        placeholder="Additional notes about this order..."></textarea>
-                                </div>
                             </div>
                         </form>
                     </div>
@@ -397,15 +392,30 @@
                             <span>Delete</span>
                         </button>
                     </div>
-                    <div class="priority-toggle">
-                        <label class="toggle-label">
-                            <input type="radio" name="priority" value="routine" checked>
-                            <span>Routine</span>
-                        </label>
-                        <label class="toggle-label">
-                            <input type="radio" name="priority" value="stat">
-                            <span>STAT</span>
-                        </label>
+                    <div class="order-header-options">
+                        <div class="priority-toggle">
+                            <label class="toggle-label">
+                                <input type="radio" name="priority" value="routine" checked>
+                                <span>Routine</span>
+                            </label>
+                            <label class="toggle-label">
+                                <input type="radio" name="priority" value="stat">
+                                <span>STAT</span>
+                            </label>
+                        </div>
+                        <div class="order-fasting-row">
+                            <span class="order-fasting-label">Fasting</span>
+                            <div id="order-fasting-group" class="fasting-segmented-group order-level-fasting" role="group" aria-label="Fasting">
+                                <button type="button" class="fasting-segmented-btn active" data-value="n/a" aria-label="Fasting: N/A">N/A</button>
+                                <button type="button" class="fasting-segmented-btn" data-value="yes" aria-label="Fasting: Yes">Yes</button>
+                                <button type="button" class="fasting-segmented-btn" data-value="no" aria-label="Fasting: No">No</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-header-separator"></div>
+                    <div class="order-clinical-comments">
+                        <label class="order-clinical-comments-label" for="order-clinical-comments">Clinical Comments</label>
+                        <textarea id="order-clinical-comments" class="order-clinical-comments-textarea" rows="1" placeholder="Enter clinical comments for this order..."></textarea>
                     </div>
                 </div>
                 <div id="order-list" class="order-list" role="list" aria-label="Selected tests">
@@ -566,24 +576,6 @@
                             </div>
 
                             <!-- Order Information -->
-                            <div class="form-section">
-                                <h3 class="section-title">Order Information</h3>
-                                <div class="form-group">
-                                    <label for="order-date">Order Date</label>
-                                    <input type="date" id="order-date" class="form-input">
-                                </div>
-                                <div class="form-group">
-                                    <label for="order-collection-datetime">Collection Date/Time</label>
-                                    <input type="datetime-local" id="order-collection-datetime" class="form-input"
-                                        aria-label="Collection date and time">
-                                </div>
-                                <div class="form-group">
-                                    <label for="order-notes">Order Notes</label>
-                                    <textarea id="order-notes" class="form-textarea" rows="3"
-                                        placeholder="Additional notes about this order..."></textarea>
-                                </div>
-                            </div>
-
                             <!-- Cost Summary -->
                             <div class="form-section">
                                 <h3 class="section-title">Cost Summary</h3>
@@ -638,14 +630,6 @@
                                 </div>
                                 <button type="button" id="add-diagnosis-btn" class="btn-add-diagnosis">+ Add Diagnosis
                                     Code</button>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="field-label">Fasting</label>
-                                <div id="edit-fasting-group" class="fasting-segmented-group">
-                                    <button type="button" class="fasting-segmented-btn" data-value="no" aria-label="Fasting: No">No</button>
-                                    <button type="button" class="fasting-segmented-btn" data-value="yes" aria-label="Fasting: Yes">Yes</button>
-                                </div>
                             </div>
 
                             <div class="form-group">
@@ -733,12 +717,6 @@
                                 <select id="edit-specimen" class="form-select">
                                     <option value="">N/A</option>
                                 </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="edit-clinical-indication">Clinical Comments</label>
-                                <textarea id="edit-clinical-indication" class="form-textarea" rows="3"
-                                    placeholder="Enter clinical comments for this test..."></textarea>
                             </div>
 
                             <div class="form-group">

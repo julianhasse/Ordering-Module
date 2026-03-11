@@ -72,7 +72,7 @@ body {
     position: sticky;
     top: 0;
     background-color: #fff;
-    padding: 20px;
+    padding: 16px 20px 20px;
     border-bottom: 1px solid #e0e0e0;
     z-index: 10;
     display: flex;
@@ -599,7 +599,7 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 16px;
+    padding: 14px 16px;
     background-color: #F4F4F4; /* gray-50, Guidelines – AA compliant */
     border-radius: 12px;
     border: 1px solid #e0e0e0;
@@ -908,7 +908,7 @@ body {
 
 /* Zone 3: Active Order List */
 .order-header {
-    padding: 20px;
+    padding: 16px 20px 16px;
     border-bottom: 1px solid #e0e0e0;
     background-color: #fafafa;
     flex-shrink: 0;
@@ -930,24 +930,22 @@ body {
 }
 
 .btn-clear-all {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
+    padding: 0;
     background: none;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    border: none;
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
-    color: #666;
-    transition: all 0.2s;
+    color: #3A5CE9;
+    transition: color 0.2s;
+    text-align: right;
 }
 
 .btn-clear-all:hover {
-    border-color: #cc0000;
-    color: #cc0000;
-    background-color: #ffe6e6;
+    color: #2D4BD4;
 }
 
 .btn-clear-all svg {
@@ -956,9 +954,74 @@ body {
     stroke: currentColor;
 }
 
+.order-header-options {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
 .priority-toggle {
     display: flex;
     gap: 16px;
+}
+
+.order-fasting-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.order-fasting-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.order-level-fasting .fasting-segmented-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+    min-width: 32px;
+}
+
+.order-header-separator {
+    margin: 12px 0 8px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.order-clinical-comments {
+    margin-top: 2px;
+}
+
+.order-clinical-comments-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-clinical-comments-textarea {
+    width: 100%;
+    height: 36px;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+    resize: none;
+    font-family: inherit;
+    line-height: 1.4;
+    box-sizing: border-box;
+}
+
+.order-clinical-comments-textarea:focus {
+    border-color: #3A5CE9;
+    box-shadow: 0 0 0 2px rgba(58, 92, 233, 0.15);
+    outline: none;
 }
 
 .toggle-label {
