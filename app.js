@@ -2251,9 +2251,11 @@ function openEditSidebar(orderId) {
     // OmniSeq INSIGHT: show/hide and populate specific AOE section
     const omniseqSection = document.getElementById('omniseq-aoes-section');
     const specimenGroup = document.getElementById('edit-specimen-group');
+    const uploadDocsGroup = document.getElementById('edit-upload-docs-group');
     const isOmniSeq = test.id === 'omniseq-insight-001';
     if (omniseqSection) omniseqSection.style.display = isOmniSeq ? 'block' : 'none';
     if (specimenGroup) specimenGroup.style.display = isOmniSeq ? 'none' : 'block';
+    if (uploadDocsGroup) uploadDocsGroup.style.display = isOmniSeq ? 'block' : 'none';
     if (isOmniSeq) {
         const o = orderItem.omniseqAoes || {};
         const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
