@@ -1928,6 +1928,14 @@ function populateReviewContent() {
                     <span class="review-value" contenteditable="true" data-field="patient.dob">${formatDate(orderDetailsData.patient.dob || '1978-12-16')}</span>
                 </div>
                 <div class="review-detail-row">
+                    <span class="review-label">Annual Income (Optional):</span>
+                    <span class="review-value">${orderDetailsData.patient.annualIncome || '—'}</span>
+                </div>
+                <div class="review-detail-row">
+                    <span class="review-label">Household Size (Optional):</span>
+                    <span class="review-value">${orderDetailsData.patient.householdSize || '—'}</span>
+                </div>
+                <div class="review-detail-row">
                     <span class="review-label">Provider:</span>
                     <span class="review-value" contenteditable="true" data-field="provider.name">${orderDetailsData.provider.name || 'Dr. Smith, John'}</span>
                 </div>
@@ -2477,7 +2485,9 @@ let orderDetailsData = {
         state: 'IL',
         zip: '62701',
         phone: '(555) 123-4567',
-        email: 'olga.simpson@example.com'
+        email: 'olga.simpson@example.com',
+        annualIncome: '',
+        householdSize: ''
     },
     provider: {
         name: 'Dr. Smith, John',
@@ -2487,7 +2497,7 @@ let orderDetailsData = {
         address: '123 Medical Center Drive, Suite 200, Springfield, IL 62701'
     },
     insurance: {
-        primary: 'Blue Cross Blue Shield',
+        primary: 'Blue Cross Blue Shield of North Carolina',
         memberId: 'BC123456789',
         group: 'GRP-98765',
         policyHolder: 'Simpson, Olga',
@@ -2578,12 +2588,12 @@ function initializeOrderDetailsAccordion() {
         // Setup form auto-save
         const form = document.getElementById('order-details-form');
         if (form) {
-            form.addEventListener('input', () => {
+            const persistOrderDetailsForm = () => {
+                syncOrderDetailsFromForm();
                 saveOrderDetailsData();
-            });
-            form.addEventListener('change', () => {
-                saveOrderDetailsData();
-            });
+            };
+            form.addEventListener('input', persistOrderDetailsForm);
+            form.addEventListener('change', persistOrderDetailsForm);
         }
         // Show/hide Secondary Method when Bill Method changes
         const billMethodSelect = document.getElementById('bill-method');
@@ -2650,6 +2660,14 @@ function populateOrderDetailsForm() {
     document.getElementById('patient-zip').value = orderDetailsData.patient.zip || '';
     document.getElementById('patient-phone').value = orderDetailsData.patient.phone || '';
     document.getElementById('patient-email').value = orderDetailsData.patient.email || '';
+    const annualIncomeVal = orderDetailsData.patient.annualIncome || '';
+    document.querySelectorAll('[id="patient-annual-income"]').forEach((el) => {
+        el.value = annualIncomeVal;
+    });
+    const householdSizeVal = orderDetailsData.patient.householdSize || '';
+    document.querySelectorAll('[id="patient-household-size"]').forEach((el) => {
+        el.value = householdSizeVal;
+    });
 
     // Add Guarantor checkbox and Guarantor Information
     const addGuarantorCheckbox = document.getElementById('add-guarantor-checkbox');
@@ -2684,8 +2702,11 @@ function populateOrderDetailsForm() {
     document.getElementById('provider-name').value = orderDetailsData.provider.name || '';
     document.getElementById('provider-npi').value = orderDetailsData.provider.npi || '';
 
-    // Insurance
-    document.getElementById('insurance-primary').value = orderDetailsData.insurance.primary || '';
+    // Insurance (duplicate id="insurance-primary" in accordion + legacy sidebar — sync all)
+    const primaryInsurance = orderDetailsData.insurance.primary || '';
+    document.querySelectorAll('[id="insurance-primary"]').forEach((el) => {
+        el.value = primaryInsurance;
+    });
     document.getElementById('insurance-member-id').value = orderDetailsData.insurance.memberId || '';
     document.getElementById('insurance-group').value = orderDetailsData.insurance.group || '';
     document.getElementById('insurance-policy-holder').value = orderDetailsData.insurance.policyHolder || '';
@@ -2725,8 +2746,7 @@ function populateOrderDetailsForm() {
     }
 }
 
-function saveOrderDetails() {
-    // Collect form data
+function syncOrderDetailsFromForm() {
     const firstNameEl = document.getElementById('patient-first-name');
     const lastNameEl = document.getElementById('patient-last-name');
     orderDetailsData.patient.firstName = firstNameEl ? firstNameEl.value : '';
@@ -2740,6 +2760,10 @@ function saveOrderDetails() {
     orderDetailsData.patient.zip = document.getElementById('patient-zip').value;
     orderDetailsData.patient.phone = document.getElementById('patient-phone').value;
     orderDetailsData.patient.email = document.getElementById('patient-email').value;
+    const annualIncomeField = document.querySelector('[id="patient-annual-income"]');
+    orderDetailsData.patient.annualIncome = annualIncomeField ? annualIncomeField.value.trim() : '';
+    const householdSizeField = document.querySelector('[id="patient-household-size"]');
+    orderDetailsData.patient.householdSize = householdSizeField ? householdSizeField.value.trim() : '';
 
     const addGuarantorEl = document.getElementById('add-guarantor-checkbox');
     if (orderDetailsData.guarantor) {
@@ -2788,8 +2812,10 @@ function saveOrderDetails() {
     }
     const secondaryMethodEl = document.getElementById('secondary-method');
     orderDetailsData.order.secondaryMethod = (secondaryMethodEl && billMethodEl && billMethodEl.value === 'third-party') ? secondaryMethodEl.value : '';
+}
 
-    // Save to localStorage
+function saveOrderDetails() {
+    syncOrderDetailsFromForm();
     saveOrderDetailsData();
 
     // Show confirmation (if save button exists in sidebar)
@@ -2841,6 +2867,17 @@ function loadOrderDetailsData() {
                 };
             }
             // If saved data has empty patient name, keep defaults (don't merge)
+        }
+
+        // Migrate legacy default Primary Insurance (localStorage used to store the old seed string)
+        const legacyPrimaryInsurance = 'Blue Cross Blue Shield';
+        const currentPrimaryInsurance = 'Blue Cross Blue Shield of North Carolina';
+        if (
+            orderDetailsData.insurance &&
+            orderDetailsData.insurance.primary === legacyPrimaryInsurance
+        ) {
+            orderDetailsData.insurance.primary = currentPrimaryInsurance;
+            saveOrderDetailsData();
         }
     } catch (e) {
         console.warn('Could not load order details from localStorage:', e);
